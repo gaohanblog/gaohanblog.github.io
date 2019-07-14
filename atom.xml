@@ -1,20 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Hexo</title>
+  <title>JouyPub</title>
   
-  
+  <subtitle>欢迎光临鄙人寒舍</subtitle>
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-07-13T11:04:46.972Z</updated>
+  <updated>2019-07-14T14:45:14.300Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
-    <name>John Doe</name>
+    <name>96gh&#39;home</name>
     
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>tags</title>
+    <link href="http://yoursite.com/2019/07/14/tags/"/>
+    <id>http://yoursite.com/2019/07/14/tags/</id>
+    <published>2019-07-14T14:45:14.000Z</published>
+    <updated>2019-07-14T14:45:14.300Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>标签测试</title>
+    <link href="http://yoursite.com/2019/07/14/%E6%A0%87%E7%AD%BE%E6%B5%8B%E8%AF%95/"/>
+    <id>http://yoursite.com/2019/07/14/标签测试/</id>
+    <published>2019-07-14T12:58:27.000Z</published>
+    <updated>2019-07-14T13:07:22.005Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="一级标题"><a href="#一级标题" class="headerlink" title="一级标题"></a>一级标题</h2><pre><code>如果您有过使用WordPress的经验，就很容易误解Hexo的分类方式。</code></pre><p>WordPress支持对一篇文章设置多个分类，而且这些分类可以是同级的，也可以是父子分类。</p><h2 id="但是Hexo不支持指定多个同级分类。下面的指定方法："><a href="#但是Hexo不支持指定多个同级分类。下面的指定方法：" class="headerlink" title="但是Hexo不支持指定多个同级分类。下面的指定方法："></a>但是Hexo不支持指定多个同级分类。下面的指定方法：</h2><a id="more"></a><h3 id="二级标题"><a href="#二级标题" class="headerlink" title="二级标题"></a>二级标题</h3><pre><code>个人活着，何任何时，是不能无所事事，</code></pre><p>更不可枸人忧天，怨声载道，必须要有他该做的事情，<br>唯有那样他的心里才会有所寄托，他才会真正的获得快乐。<br>不要抱怨工作的奔波劳累，其实有的时候，不是工作本身有多么辛苦，</p><h2 id="而是我们自己的身心感觉的，也许可能真的是累了。"><a href="#而是我们自己的身心感觉的，也许可能真的是累了。" class="headerlink" title="而是我们自己的身心感觉的，也许可能真的是累了。"></a>而是我们自己的身心感觉的，也许可能真的是累了。</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo02</span> </span>&#123;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">Connection conn = (Connection) JDBCUtil.getMysqlConn();</span><br><span class="line">PreparedStatement ps = <span class="keyword">null</span>;</span><br><span class="line">ResultSet rs = <span class="keyword">null</span>;</span><br><span class="line">List&lt;Map&lt;String,Object&gt;&gt; list = <span class="keyword">new</span> ArrayList&lt;Map&lt;String,Object&gt;&gt;();</span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">ps = conn.prepareStatement(<span class="string">"select empname,salary,age from emp where id&gt;?"</span>);</span><br><span class="line">ps.setObject(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">rs = ps.executeQuery();</span><br><span class="line"><span class="keyword">while</span>(rs.next()) &#123;</span><br><span class="line">Map&lt;String,Object&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">map.put(<span class="string">"empname"</span>, rs.getObject(<span class="number">1</span>));</span><br><span class="line">map.put(<span class="string">"salary"</span>, rs.getObject(<span class="number">2</span>));</span><br><span class="line">map.put(<span class="string">"age"</span>, rs.getObject(<span class="number">3</span>));</span><br><span class="line">list.add(map);</span><br><span class="line">&#125;</span><br><span class="line">&#125;<span class="keyword">catch</span>(SQLException e) &#123;</span><br><span class="line">e.printStackTrace();</span><br><span class="line">&#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">JDBCUtil.close(rs,ps,conn);</span><br><span class="line"><span class="keyword">for</span> (Map&lt;String,Object&gt; row : list) &#123;</span><br><span class="line"><span class="keyword">for</span> (String key : row.keySet()) &#123;</span><br><span class="line">System.out.print(key+<span class="string">"-----"</span>+row.get(key)+<span class="string">"\t"</span>);</span><br><span class="line">&#125;</span><br><span class="line">System.out.println();</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;一级标题&quot;&gt;&lt;a href=&quot;#一级标题&quot; class=&quot;headerlink&quot; title=&quot;一级标题&quot;&gt;&lt;/a&gt;一级标题&lt;/h2&gt;&lt;pre&gt;&lt;code&gt;如果您有过使用WordPress的经验，就很容易误解Hexo的分类方式。&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;WordPress支持对一篇文章设置多个分类，而且这些分类可以是同级的，也可以是父子分类。&lt;/p&gt;
+&lt;h2 id=&quot;但是Hexo不支持指定多个同级分类。下面的指定方法：&quot;&gt;&lt;a href=&quot;#但是Hexo不支持指定多个同级分类。下面的指定方法：&quot; class=&quot;headerlink&quot; title=&quot;但是Hexo不支持指定多个同级分类。下面的指定方法：&quot;&gt;&lt;/a&gt;但是Hexo不支持指定多个同级分类。下面的指定方法：&lt;/h2&gt;
+    
+    </summary>
+    
+    
+      <category term="java" scheme="http://yoursite.com/tags/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>标签测试2</title>
+    <link href="http://yoursite.com/2019/07/14/%E6%A0%87%E7%AD%BE%E6%B5%8B%E8%AF%952/"/>
+    <id>http://yoursite.com/2019/07/14/标签测试2/</id>
+    <published>2019-07-14T12:58:27.000Z</published>
+    <updated>2019-07-14T13:14:58.560Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="一级标题"><a href="#一级标题" class="headerlink" title="一级标题"></a>一级标题</h2><pre><code>如果您有过使用WordPress的经验，就很容易误解Hexo的分类方式。</code></pre><p>WordPress支持对一篇文章设置多个分类，而且这些分类可以是同级的，也可以是父子分类。</p><h2 id="但是Hexo不支持指定多个同级分类。下面的指定方法："><a href="#但是Hexo不支持指定多个同级分类。下面的指定方法：" class="headerlink" title="但是Hexo不支持指定多个同级分类。下面的指定方法："></a>但是Hexo不支持指定多个同级分类。下面的指定方法：</h2><a id="more"></a><h3 id="二级标题"><a href="#二级标题" class="headerlink" title="二级标题"></a>二级标题</h3><pre><code>个人活着，何任何时，是不能无所事事，</code></pre><p>更不可枸人忧天，怨声载道，必须要有他该做的事情，<br>唯有那样他的心里才会有所寄托，他才会真正的获得快乐。<br>不要抱怨工作的奔波劳累，其实有的时候，不是工作本身有多么辛苦，</p><h2 id="而是我们自己的身心感觉的，也许可能真的是累了。"><a href="#而是我们自己的身心感觉的，也许可能真的是累了。" class="headerlink" title="而是我们自己的身心感觉的，也许可能真的是累了。"></a>而是我们自己的身心感觉的，也许可能真的是累了。</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo02</span> </span>&#123;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">Connection conn = (Connection) JDBCUtil.getMysqlConn();</span><br><span class="line">PreparedStatement ps = <span class="keyword">null</span>;</span><br><span class="line">ResultSet rs = <span class="keyword">null</span>;</span><br><span class="line">List&lt;Map&lt;String,Object&gt;&gt; list = <span class="keyword">new</span> ArrayList&lt;Map&lt;String,Object&gt;&gt;();</span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">ps = conn.prepareStatement(<span class="string">"select empname,salary,age from emp where id&gt;?"</span>);</span><br><span class="line">ps.setObject(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">rs = ps.executeQuery();</span><br><span class="line"><span class="keyword">while</span>(rs.next()) &#123;</span><br><span class="line">Map&lt;String,Object&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">map.put(<span class="string">"empname"</span>, rs.getObject(<span class="number">1</span>));</span><br><span class="line">map.put(<span class="string">"salary"</span>, rs.getObject(<span class="number">2</span>));</span><br><span class="line">map.put(<span class="string">"age"</span>, rs.getObject(<span class="number">3</span>));</span><br><span class="line">list.add(map);</span><br><span class="line">&#125;</span><br><span class="line">&#125;<span class="keyword">catch</span>(SQLException e) &#123;</span><br><span class="line">e.printStackTrace();</span><br><span class="line">&#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">JDBCUtil.close(rs,ps,conn);</span><br><span class="line"><span class="keyword">for</span> (Map&lt;String,Object&gt; row : list) &#123;</span><br><span class="line"><span class="keyword">for</span> (String key : row.keySet()) &#123;</span><br><span class="line">System.out.print(key+<span class="string">"-----"</span>+row.get(key)+<span class="string">"\t"</span>);</span><br><span class="line">&#125;</span><br><span class="line">System.out.println();</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;一级标题&quot;&gt;&lt;a href=&quot;#一级标题&quot; class=&quot;headerlink&quot; title=&quot;一级标题&quot;&gt;&lt;/a&gt;一级标题&lt;/h2&gt;&lt;pre&gt;&lt;code&gt;如果您有过使用WordPress的经验，就很容易误解Hexo的分类方式。&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;WordPress支持对一篇文章设置多个分类，而且这些分类可以是同级的，也可以是父子分类。&lt;/p&gt;
+&lt;h2 id=&quot;但是Hexo不支持指定多个同级分类。下面的指定方法：&quot;&gt;&lt;a href=&quot;#但是Hexo不支持指定多个同级分类。下面的指定方法：&quot; class=&quot;headerlink&quot; title=&quot;但是Hexo不支持指定多个同级分类。下面的指定方法：&quot;&gt;&lt;/a&gt;但是Hexo不支持指定多个同级分类。下面的指定方法：&lt;/h2&gt;
+    
+    </summary>
+    
+    
+      <category term="java" scheme="http://yoursite.com/tags/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>jQuery对表单的操作及更多应用</title>
+    <link href="http://yoursite.com/2019/07/14/java-io%E6%B5%81%E5%A4%84%E7%90%86%E9%97%AE%E9%A2%98/"/>
+    <id>http://yoursite.com/2019/07/14/java-io流处理问题/</id>
+    <published>2019-07-14T12:49:57.000Z</published>
+    <updated>2019-07-14T14:53:36.703Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="一级标题"><a href="#一级标题" class="headerlink" title="一级标题"></a>一级标题</h2><p>这是一个java题材的代码</p><a id="more"></a><hr><h2 id="MaHua有哪些功能？"><a href="#MaHua有哪些功能？" class="headerlink" title="MaHua有哪些功能？"></a>MaHua有哪些功能？</h2><ul><li>方便的<code>导入导出</code>功能<ul><li>直接把一个markdown的文本文件拖放到当前这个页面就可以了</li><li>导出为一个html格式的文件，样式一点也不会丢失</li></ul></li><li>编辑和预览<code>同步滚动</code>，所见即所得（右上角设置）</li><li><code>VIM快捷键</code>支持，方便vim党们快速的操作 （右上角设置）</li><li>强大的<code>自定义CSS</code>功能，方便定制自己的展示</li><li>有数量也有质量的<code>主题</code>,编辑器和预览区域</li><li>完美兼容<code>Github</code>的markdown语法</li><li>预览区域<code>代码高亮</code></li><li>所有选项自动记忆</li></ul><hr><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo02</span> </span>&#123;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">Connection conn = (Connection) JDBCUtil.getMysqlConn();</span><br><span class="line">PreparedStatement ps = <span class="keyword">null</span>;</span><br><span class="line">ResultSet rs = <span class="keyword">null</span>;</span><br><span class="line">List&lt;Map&lt;String,Object&gt;&gt; list = <span class="keyword">new</span> ArrayList&lt;Map&lt;String,Object&gt;&gt;();</span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">ps = conn.prepareStatement(<span class="string">"select empname,salary,age from emp where id&gt;?"</span>);</span><br><span class="line">ps.setObject(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">rs = ps.executeQuery();</span><br><span class="line"><span class="keyword">while</span>(rs.next()) &#123;</span><br><span class="line">Map&lt;String,Object&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">map.put(<span class="string">"empname"</span>, rs.getObject(<span class="number">1</span>));</span><br><span class="line">map.put(<span class="string">"salary"</span>, rs.getObject(<span class="number">2</span>));</span><br><span class="line">map.put(<span class="string">"age"</span>, rs.getObject(<span class="number">3</span>));</span><br><span class="line">list.add(map);</span><br><span class="line">&#125;</span><br><span class="line">&#125;<span class="keyword">catch</span>(SQLException e) &#123;</span><br><span class="line">e.printStackTrace();</span><br><span class="line">&#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">JDBCUtil.close(rs,ps,conn);</span><br><span class="line"><span class="keyword">for</span> (Map&lt;String,Object&gt; row : list) &#123;</span><br><span class="line"><span class="keyword">for</span> (String key : row.keySet()) &#123;</span><br><span class="line">System.out.print(key+<span class="string">"-----"</span>+row.get(key)+<span class="string">"\t"</span>);</span><br><span class="line">&#125;</span><br><span class="line">System.out.println();</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;一级标题&quot;&gt;&lt;a href=&quot;#一级标题&quot; class=&quot;headerlink&quot; title=&quot;一级标题&quot;&gt;&lt;/a&gt;一级标题&lt;/h2&gt;&lt;p&gt;这是一个java题材的代码&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="web前端" scheme="http://yoursite.com/categories/web%E5%89%8D%E7%AB%AF/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>js高亮语法</title>
+    <link href="http://yoursite.com/2019/07/14/js%E9%AB%98%E4%BA%AE%E8%AF%AD%E6%B3%95/"/>
+    <id>http://yoursite.com/2019/07/14/js高亮语法/</id>
+    <published>2019-07-14T12:49:57.000Z</published>
+    <updated>2019-07-14T14:56:44.108Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="一级标题"><a href="#一级标题" class="headerlink" title="一级标题"></a>一级标题</h2><p>这是一个java题材的代码</p><a id="more"></a><hr><h2 id="MaHua有哪些功能？"><a href="#MaHua有哪些功能？" class="headerlink" title="MaHua有哪些功能？"></a>MaHua有哪些功能？</h2><ul><li>方便的<code>导入导出</code>功能<ul><li>直接把一个markdown的文本文件拖放到当前这个页面就可以了</li><li>导出为一个html格式的文件，样式一点也不会丢失</li></ul></li><li>编辑和预览<code>同步滚动</code>，所见即所得（右上角设置）</li><li><code>VIM快捷键</code>支持，方便vim党们快速的操作 （右上角设置）</li><li>强大的<code>自定义CSS</code>功能，方便定制自己的展示</li><li>有数量也有质量的<code>主题</code>,编辑器和预览区域</li><li>完美兼容<code>Github</code>的markdown语法</li><li>预览区域<code>代码高亮</code></li><li>所有选项自动记忆</li></ul><hr><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo02</span> </span>&#123;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">Connection conn = (Connection) JDBCUtil.getMysqlConn();</span><br><span class="line">PreparedStatement ps = <span class="keyword">null</span>;</span><br><span class="line">ResultSet rs = <span class="keyword">null</span>;</span><br><span class="line">List&lt;Map&lt;String,Object&gt;&gt; list = <span class="keyword">new</span> ArrayList&lt;Map&lt;String,Object&gt;&gt;();</span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">ps = conn.prepareStatement(<span class="string">"select empname,salary,age from emp where id&gt;?"</span>);</span><br><span class="line">ps.setObject(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">rs = ps.executeQuery();</span><br><span class="line"><span class="keyword">while</span>(rs.next()) &#123;</span><br><span class="line">Map&lt;String,Object&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">map.put(<span class="string">"empname"</span>, rs.getObject(<span class="number">1</span>));</span><br><span class="line">map.put(<span class="string">"salary"</span>, rs.getObject(<span class="number">2</span>));</span><br><span class="line">map.put(<span class="string">"age"</span>, rs.getObject(<span class="number">3</span>));</span><br><span class="line">list.add(map);</span><br><span class="line">&#125;</span><br><span class="line">&#125;<span class="keyword">catch</span>(SQLException e) &#123;</span><br><span class="line">e.printStackTrace();</span><br><span class="line">&#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">JDBCUtil.close(rs,ps,conn);</span><br><span class="line"><span class="keyword">for</span> (Map&lt;String,Object&gt; row : list) &#123;</span><br><span class="line"><span class="keyword">for</span> (String key : row.keySet()) &#123;</span><br><span class="line">System.out.print(key+<span class="string">"-----"</span>+row.get(key)+<span class="string">"\t"</span>);</span><br><span class="line">&#125;</span><br><span class="line">System.out.println();</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;一级标题&quot;&gt;&lt;a href=&quot;#一级标题&quot; class=&quot;headerlink&quot; title=&quot;一级标题&quot;&gt;&lt;/a&gt;一级标题&lt;/h2&gt;&lt;p&gt;这是一个java题材的代码&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="web前端" scheme="http://yoursite.com/categories/web%E5%89%8D%E7%AB%AF/"/>
+    
+    
+      <category term="jQuery" scheme="http://yoursite.com/tags/jQuery/"/>
+    
+      <category term="表格" scheme="http://yoursite.com/tags/%E8%A1%A8%E6%A0%BC/"/>
+    
+      <category term="表单验证" scheme="http://yoursite.com/tags/%E8%A1%A8%E5%8D%95%E9%AA%8C%E8%AF%81/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>test01</title>
+    <link href="http://yoursite.com/2019/07/14/test01/"/>
+    <id>http://yoursite.com/2019/07/14/test01/</id>
+    <published>2019-07-14T12:49:57.000Z</published>
+    <updated>2019-07-14T14:08:14.046Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="一级标题"><a href="#一级标题" class="headerlink" title="一级标题"></a>一级标题</h2><p>这是一个java题材的代码</p><a id="more"></a><hr><h2 id="MaHua有哪些功能？"><a href="#MaHua有哪些功能？" class="headerlink" title="MaHua有哪些功能？"></a>MaHua有哪些功能？</h2><ul><li>方便的<code>导入导出</code>功能<ul><li>直接把一个markdown的文本文件拖放到当前这个页面就可以了</li><li>导出为一个html格式的文件，样式一点也不会丢失</li></ul></li><li>编辑和预览<code>同步滚动</code>，所见即所得（右上角设置）</li><li><code>VIM快捷键</code>支持，方便vim党们快速的操作 （右上角设置）</li><li>强大的<code>自定义CSS</code>功能，方便定制自己的展示</li><li>有数量也有质量的<code>主题</code>,编辑器和预览区域</li><li>完美兼容<code>Github</code>的markdown语法</li><li>预览区域<code>代码高亮</code></li><li>所有选项自动记忆</li></ul><hr><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo02</span> </span>&#123;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">Connection conn = (Connection) JDBCUtil.getMysqlConn();</span><br><span class="line">PreparedStatement ps = <span class="keyword">null</span>;</span><br><span class="line">ResultSet rs = <span class="keyword">null</span>;</span><br><span class="line">List&lt;Map&lt;String,Object&gt;&gt; list = <span class="keyword">new</span> ArrayList&lt;Map&lt;String,Object&gt;&gt;();</span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">ps = conn.prepareStatement(<span class="string">"select empname,salary,age from emp where id&gt;?"</span>);</span><br><span class="line">ps.setObject(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">rs = ps.executeQuery();</span><br><span class="line"><span class="keyword">while</span>(rs.next()) &#123;</span><br><span class="line">Map&lt;String,Object&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">map.put(<span class="string">"empname"</span>, rs.getObject(<span class="number">1</span>));</span><br><span class="line">map.put(<span class="string">"salary"</span>, rs.getObject(<span class="number">2</span>));</span><br><span class="line">map.put(<span class="string">"age"</span>, rs.getObject(<span class="number">3</span>));</span><br><span class="line">list.add(map);</span><br><span class="line">&#125;</span><br><span class="line">&#125;<span class="keyword">catch</span>(SQLException e) &#123;</span><br><span class="line">e.printStackTrace();</span><br><span class="line">&#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">JDBCUtil.close(rs,ps,conn);</span><br><span class="line"><span class="keyword">for</span> (Map&lt;String,Object&gt; row : list) &#123;</span><br><span class="line"><span class="keyword">for</span> (String key : row.keySet()) &#123;</span><br><span class="line">System.out.print(key+<span class="string">"-----"</span>+row.get(key)+<span class="string">"\t"</span>);</span><br><span class="line">&#125;</span><br><span class="line">System.out.println();</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;一级标题&quot;&gt;&lt;a href=&quot;#一级标题&quot; class=&quot;headerlink&quot; title=&quot;一级标题&quot;&gt;&lt;/a&gt;一级标题&lt;/h2&gt;&lt;p&gt;这是一个java题材的代码&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="分类1" scheme="http://yoursite.com/categories/%E5%88%86%E7%B1%BB1/"/>
+    
+      <category term="分类2" scheme="http://yoursite.com/categories/%E5%88%86%E7%B1%BB1/%E5%88%86%E7%B1%BB2/"/>
+    
+    
+      <category term="标签1" scheme="http://yoursite.com/tags/%E6%A0%87%E7%AD%BE1/"/>
+    
+      <category term="标签2" scheme="http://yoursite.com/tags/%E6%A0%87%E7%AD%BE2/"/>
+    
+  </entry>
   
   <entry>
     <title>第一篇博客</title>
