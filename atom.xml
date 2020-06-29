@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>To be or not to be?</title>
   
-  <subtitle>gaohan的学习小栈</subtitle>
+  <subtitle>刷题学习笔记</subtitle>
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
@@ -10,7 +10,7 @@
   <id>http://yoursite.com/</id>
   
   <author>
-    <name>96gh&#39;home</name>
+    <name>Gh</name>
     
   </author>
   
