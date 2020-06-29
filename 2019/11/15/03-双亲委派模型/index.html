@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-center-simple.min.css?v=1.0.2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/ffavicon32.ico?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon32.ico?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":15,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+
+
+  <meta name="description" content="说到JVM的类加载机制，双亲委派模型是绕不开的话题，名字好像高大上的玩意，我们来逐步揭开他的面纱。 回顾类加载器上节我们说到了类加载器的作用，说到了加载class文件。但是绝对没有那么简单，神书《深入理解java虚拟机》中对类加载器的说明：  代码编译的结果从本地机器码转变成字节码，是存储格式的一小步，却是编程语言发展的一大步。Java虚拟机把描述类的数据从Class文件加载进内存，并对数据进行校">
+<meta name="keywords" content="JVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-双亲委派模型">
+<meta property="og:url" content="http://yoursite.com/2019/11/15/03-双亲委派模型/index.html">
+<meta property="og:site_name" content="To be or not to be?">
+<meta property="og:description" content="说到JVM的类加载机制，双亲委派模型是绕不开的话题，名字好像高大上的玩意，我们来逐步揭开他的面纱。 回顾类加载器上节我们说到了类加载器的作用，说到了加载class文件。但是绝对没有那么简单，神书《深入理解java虚拟机》中对类加载器的说明：  代码编译的结果从本地机器码转变成字节码，是存储格式的一小步，却是编程语言发展的一大步。Java虚拟机把描述类的数据从Class文件加载进内存，并对数据进行校">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/JVM/jvm3-1.png">
+<meta property="og:updated_time" content="2019-11-15T03:07:48.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="03-双亲委派模型">
+<meta name="twitter:description" content="说到JVM的类加载机制，双亲委派模型是绕不开的话题，名字好像高大上的玩意，我们来逐步揭开他的面纱。 回顾类加载器上节我们说到了类加载器的作用，说到了加载class文件。但是绝对没有那么简单，神书《深入理解java虚拟机》中对类加载器的说明：  代码编译的结果从本地机器码转变成字节码，是存储格式的一小步，却是编程语言发展的一大步。Java虚拟机把描述类的数据从Class文件加载进内存，并对数据进行校">
+<meta name="twitter:image" content="http://blog-picture-g.test.upcdn.net/JVM/jvm3-1.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="To be or not to be?" type="application/atom+xml">
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2019/11/15/03-双亲委派模型/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>03-双亲委派模型 | To be or not to be?</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">To be or not to be?</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">gaohan的学习小栈</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>about me</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/gaohanblog/gaohanblog.github.io" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/15/03-双亲委派模型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="96gh'home">
+      <meta itemprop="description" content="闲敲棋子落灯花">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="To be or not to be?">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">03-双亲委派模型
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-15 11:07:48" itemprop="dateCreated datePublished" datetime="2019-11-15T11:07:48+08:00">2019-11-15</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">4.8k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">4 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>说到JVM的类加载机制，双亲委派模型是绕不开的话题，名字好像高大上的玩意，我们来逐步揭开他的面纱。</p>
+<h2 id="回顾类加载器"><a href="#回顾类加载器" class="headerlink" title="回顾类加载器"></a><font color="#8B475D">回顾类加载器</font></h2><p>上节我们说到了类加载器的作用，说到了加载class文件。但是绝对没有那么简单，神书《深入理解java虚拟机》中对类加载器的说明：</p>
+<blockquote>
+<p><font color="#333">代码编译的结果从本地机器码转变成字节码，是存储格式的一小步，却是编程语言发展的一大步。<br><br>Java虚拟机把描述类的数据从Class文件加载进内存，并对数据进行校验，转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这就是虚拟机的类加载机制。 <br>  <br><br>虚拟机设计团队把类加载阶段中的“通过一个类的全限定名来获取描述此类的二进制字节流”这个动作放到Java虚拟机外部去实现，以便让应用程序自己决定如何去获取所需要的类。实现这动作的代码模块成为“类加载器”。<br> <br><br>类加载器虽然只用于实现类的加载动作，但它在Java程序中起到的作用却远远不限于类加载阶段。对于任意一个类，都需要由加载他的类加载器和这个类本身一同确立其在Java虚拟机中的唯一性，每一个类加载器，都拥有一个独立的类命名空间。这句话可以表达的更通俗一些：比较两个类是否“相等”，只有在这两个类是由同一个类加载器加载的前提下才有意义，否则，即使这两个类来自同一个Class文件，被同一个虚拟机加载，只要加载他们的类加载器不同，那这个两个类就必定不相等。</font></p>
+</blockquote>
+    
+对于上面进行一些说明：
+
+
+<p>注意，加载之后要将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构（方法区就是用来存放已被加载的类信息，常量，静态变量，编译后的代码的运行时内存区域）</p>
+<p>在内存中生成一个代表这个类的<code>java.lang.Class</code>对象，作为方法区这个类的各种数据的访问入口。这个<code>Class</code>对象并没有规定是在Java堆内存中，它比较特殊，虽为对象，但存放在方法区中。</p>
+<p>这样，就可以使用这个类了。</p>
+<p>还有，关于相等，只有在满足如下三个类“相等”判定条件，才能判定两个类相等。</p>
+<ul>
+<li>两个类来自同一个Class文件</li>
+<li>两个类是由同一个虚拟机加载</li>
+<li>两个类是由同一个类加载器加载</li>
+</ul>
+<h2 id="双亲委派模型"><a href="#双亲委派模型" class="headerlink" title="双亲委派模型"></a><font color="#8B475D">双亲委派模型</font></h2><p>我们上一节已经知道了有四种类加载器，它们的实际关系为：</p>
+<p><img src="http://blog-picture-g.test.upcdn.net/JVM/jvm3-1.png" alt="image"></p>
+<p>从这个图来看，是一个继承的关系，是这样吗？我们用代码来看看是不是真的是这样。</p>
+<p>代码还是用上一篇文章自定义类加载器来测试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">       MyClassLoader myClassLoader = <span class="keyword">new</span> MyClassLoader(<span class="string">"E:\\"</span>,<span class="string">"myClassLoader"</span>);</span><br><span class="line">       Class c = myClassLoader.findClass(<span class="string">"MyClass"</span>);</span><br><span class="line">       System.out.println(c.getClassLoader());</span><br><span class="line">       System.out.println(c.getClassLoader().getParent());</span><br><span class="line">       System.out.println(c.getClassLoader().getParent().getParent());</span><br><span class="line">       System.out.println(c.getClassLoader().getParent().getParent().getParent());</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">test01.MyClassLoader@<span class="number">4554617</span>c</span><br><span class="line">sun.misc.Launcher$AppClassLoader@<span class="number">18</span>b4aac2</span><br><span class="line">sun.misc.Launcher$ExtClassLoader@<span class="number">1540e19</span>d</span><br><span class="line"><span class="keyword">null</span></span><br></pre></td></tr></table></figure>
+
+<p>从这个结果就很容易看出，层级关系是与上图所述的一样。那么，这个层级关系其实就是我们下面要说的双亲委派模型的结构。</p>
+<p>在上面我们看到在我们自定义最顶层是<code>bootstrapClassLoader</code>为什么为null,因为它是用<code>C++</code>语言实现的，不是java语言实现的，所以与其他几个都有区别，这里根据就调用不到，所以显示null。如果非要看<code>bootstrap</code>里面大概如何实现的，需要去看看<code>opjdk</code>的代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> Class&lt;?&gt; loadClass(String name, <span class="keyword">boolean</span> resolve)</span><br><span class="line">       <span class="keyword">throws</span> ClassNotFoundException</span><br><span class="line">   &#123;</span><br><span class="line">   	<span class="comment">//加锁</span></span><br><span class="line">       <span class="keyword">synchronized</span> (getClassLoadingLock(name)) &#123;</span><br><span class="line">       	<span class="comment">//首先看看当前类加载器是否加载过，没有则委派给父亲查询</span></span><br><span class="line">           Class&lt;?&gt; c = findLoadedClass(name);</span><br><span class="line">           <span class="comment">//判断当前类加载器没有加载过，如果没有则进来</span></span><br><span class="line">           <span class="keyword">if</span> (c == <span class="keyword">null</span>) &#123;</span><br><span class="line">               <span class="keyword">long</span> t0 = System.nanoTime();</span><br><span class="line">               <span class="keyword">try</span> &#123;</span><br><span class="line">               	<span class="comment">//判断父类加载器有没有加载过</span></span><br><span class="line">                   <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</span><br><span class="line">                   	<span class="comment">//这里再去调用函数本身，如果由下至上查询都没有加载过，则从上至下尝试去加载</span></span><br><span class="line">                       c = parent.loadClass(name, <span class="keyword">false</span>);</span><br><span class="line">                   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   	<span class="comment">//因为bootstrap不是java语言实现，单独判断顶级类是否被加载过</span></span><br><span class="line">                       c = findBootstrapClassOrNull(name);</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">                   <span class="comment">// ClassNotFoundException thrown if class not found</span></span><br><span class="line">                   <span class="comment">// from the non-null parent class loader</span></span><br><span class="line">               &#125;</span><br><span class="line">               <span class="comment">//如果所有类加载器都没有加载过，则开始尝试从上而下逐级去加载</span></span><br><span class="line">               <span class="keyword">if</span> (c == <span class="keyword">null</span>) &#123;</span><br><span class="line">                   <span class="comment">// If still not found, then invoke findClass in order</span></span><br><span class="line">                   <span class="comment">// to find the class.</span></span><br><span class="line">                   <span class="keyword">long</span> t1 = System.nanoTime();</span><br><span class="line">                   <span class="comment">//去加载</span></span><br><span class="line">                   c = findClass(name);</span><br><span class="line"></span><br><span class="line">                   <span class="comment">// this is the defining class loader; record the stats</span></span><br><span class="line">                   sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">                   sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">                   sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="keyword">if</span> (resolve) &#123;</span><br><span class="line">               resolveClass(c);</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="keyword">return</span> c;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>其实很简单，就是先一级一级往上查询是否已经加载过，加载过直接返回即可；一直查询到<code>bootstrap</code>类加载器，都没有加载过，那么就从<code>bootstrap</code>类加载器开始一级一级向下到他们的扫描范围内尝试加载这个<code>class</code>文件，知道自定义类加载(如果有的话)，没有则返回找不到。</p>
+<p>说一下代码的实现思路。代码使用递归实现的，先一级一级找父亲，即一级一级向上入栈，某一个查到了就返回，每一层递归停留在<code>c = parent.loadClass(name, false)</code>;；都查不到，再一级一级出栈去执行，那么就从<code>c = findBootstrapClassOrNull(name)</code>;后面的代码继续执行，那么显然就是执行<code>if (c == null) {...}</code>尝试去加载。</p>
+<h2 id="为什么要用双亲委派模型"><a href="#为什么要用双亲委派模型" class="headerlink" title="为什么要用双亲委派模型"></a><font color="#8B475D">为什么要用双亲委派模型</font></h2><p>双亲委派模型好处主要有两点。</p>
+<h5 id="安全性"><a href="#安全性" class="headerlink" title="#安全性"></a>#<font color="#367bdd">安全性</font></h5><p>我们模拟一个场景：</p>
+<blockquote>
+<p><font color="#333">黑客自定义一个<code>java.lang.String</code>类，该<code>String</code>类具有系统的<code>String</code>类一样的功能，只<br>是在某个函数稍作修改。比如<code>toSting</code>函数，这个函数经常使用，如果在这这个函数中，<br>黑客加入一些“病毒代码”。并且通过自定义类加载器加入到JVM中。此时，如果没有双亲<br>委派模型，那么JVM就可能误以为黑客自定义的<code>java.lang.String</code>类是系统的<code>String</code>类，<br>导致“病毒代码”被执行。</font></p>
+</blockquote>
+<p>而有了双亲委派模型，黑客自定义的<code>java.lang.String</code>类永远都不会被加载进内存。因为首先是最顶端的类加载器加载系统的<code>java.lang.String</code>类，最终自定义的类加载器无法加载<code>java.lang.String</code>类。</p>
+<p>或许你会想，我在自定义的类加载器里面强制加载自定义的<code>java.lang.String</code>类，不去通过调用父加载器不就好了吗?确实，这样是可行。但是，在JVM中，判断一个对象是否是某个类型时，如果该对象的实际类型与待比较的类型的类加载器不同，那么会返回<code>false</code>。</p>
+<p>举个简单例子：假如<code>classLoader1</code>和<code>classLoader2</code>都加载<code>java.lang.String</code>类，对应<code>Class1</code>、<code>Class2</code>对象。<br>那么<code>Class1</code>对象不属于<code>ClassLoad2</code>对象加载的<code>java.lang.String</code>类型。</p>
+<p>委托机制的意义：防止内存中出现多份同样的字节码。这就提到了下面双亲委派的另一个好处。</p>
+<h5 id="唯一性"><a href="#唯一性" class="headerlink" title="#唯一性"></a>#<font color="#367bdd">唯一性</font></h5><p>上面我们说过委托的机制就是防止内存中出现多分同样的字节码，比如两个类A和类B都要加载<code>System</code>类：</p>
+<p>如果不用委托而是自己加载自己的，那么类A就会加载一份<code>System</code>字节码，然后类B又会加载一份<code>System</code>字节码，这样内存中就出现了两份<code>System</code>字节码。</p>
+<p>如果使用委托机制，会递归的向父类查找，也就是首选用<code>Bootstrap</code>尝试加载，如果找不到再向下。这里的<code>System</code>就能在<code>Bootstrap</code>中找到然后加载，如果此时类B也要加载<code>System</code>，也从<code>Bootstrap</code>开始，此时<code>Bootstrap</code>发现已经加载过了<code>System</code>那么直接返回内存中的<code>System</code>即可而不需要重新加载，这样内存中就只有一份<code>System</code>的字节码了。</p>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="96gh'home 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/JVM/" rel="tag"># JVM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/13/02-ClassLoder/" rel="next" title="02-ClassLoder">
+                <i class="fa fa-chevron-left"></i> 02-ClassLoder
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/18/leetcode-24 - 两两交换相邻的节点/" rel="prev" title="leetcode- 024 -两两交换相邻的节点">
+                leetcode- 024 -两两交换相邻的节点 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="96gh'home">
+            
+              <p class="site-author-name" itemprop="name">96gh'home</p>
+              <div class="site-description motion-element" itemprop="description">闲敲棋子落灯花</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">328</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com" title="GitHub &rarr; https://github.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://weibo.com/yourname" title="Weibo &rarr; https://weibo.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/yourname" title="StackOverflow &rarr; https://stackoverflow.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="/" title="blibili &rarr; "><i class="fa fa-fw fa-globe"></i>blibili</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://google.com/" title="https://google.com/" rel="noopener" target="_blank">谷歌</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://baidu.com/" title="http://baidu.com/" rel="noopener" target="_blank">百度</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联1</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联2</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#回顾类加载器"><span class="nav-number">1.</span> <span class="nav-text">回顾类加载器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#双亲委派模型"><span class="nav-number">2.</span> <span class="nav-text">双亲委派模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要用双亲委派模型"><span class="nav-number">3.</span> <span class="nav-text">为什么要用双亲委派模型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#安全性"><span class="nav-number">3.0.0.1.</span> <span class="nav-text">#安全性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#唯一性"><span class="nav-number">3.0.0.2.</span> <span class="nav-text">#唯一性</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">96gh'home</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">859k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">13:01</span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,0" opacity="0.5" zindex="-1" count="150" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw==">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+  
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;"></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+  
+
+  
+
+</body>
+</html>

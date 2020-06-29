@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-center-simple.min.css?v=1.0.2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/ffavicon32.ico?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon32.ico?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":15,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+
+
+  <meta name="description" content="代理模式是一个很重要的模式，在我的设计模式文章里面也有关于代理模式的分析，上篇文章我们看了注解，如果在spring中最典型的两个特性一个是IOC即控制反转和AOP即面向切面编程，IOC的实现原理是利用了JAVA的反射技术，那么AOP的实现原理是什么呢？就是动态代理技术，目前动态代理技术主要分为Java自己提供的JDK动态代理技术和CGLIB技术,下面我们看下“JDK的动态代理技术”  代理模式的定">
+<meta name="keywords" content="java基础">
+<meta property="og:type" content="article">
+<meta property="og:title" content="08-JDK动态代理">
+<meta property="og:url" content="http://yoursite.com/2019/01/30/08-JDK动态代理/index.html">
+<meta property="og:site_name" content="To be or not to be?">
+<meta property="og:description" content="代理模式是一个很重要的模式，在我的设计模式文章里面也有关于代理模式的分析，上篇文章我们看了注解，如果在spring中最典型的两个特性一个是IOC即控制反转和AOP即面向切面编程，IOC的实现原理是利用了JAVA的反射技术，那么AOP的实现原理是什么呢？就是动态代理技术，目前动态代理技术主要分为Java自己提供的JDK动态代理技术和CGLIB技术,下面我们看下“JDK的动态代理技术”  代理模式的定">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-1.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-2.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-3.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-4.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-5.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-6.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-7.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-8.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-9.png">
+<meta property="og:updated_time" content="2019-11-15T03:28:48.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="08-JDK动态代理">
+<meta name="twitter:description" content="代理模式是一个很重要的模式，在我的设计模式文章里面也有关于代理模式的分析，上篇文章我们看了注解，如果在spring中最典型的两个特性一个是IOC即控制反转和AOP即面向切面编程，IOC的实现原理是利用了JAVA的反射技术，那么AOP的实现原理是什么呢？就是动态代理技术，目前动态代理技术主要分为Java自己提供的JDK动态代理技术和CGLIB技术,下面我们看下“JDK的动态代理技术”  代理模式的定">
+<meta name="twitter:image" content="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-1.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="To be or not to be?" type="application/atom+xml">
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2019/01/30/08-JDK动态代理/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>08-JDK动态代理 | To be or not to be?</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">To be or not to be?</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">gaohan的学习小栈</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>about me</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/gaohanblog/gaohanblog.github.io" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/30/08-JDK动态代理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="96gh'home">
+      <meta itemprop="description" content="闲敲棋子落灯花">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="To be or not to be?">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">08-JDK动态代理
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-30 09:36:48" itemprop="dateCreated datePublished" datetime="2019-01-30T09:36:48+08:00">2019-01-30</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 11:28:48" itemprop="dateModified" datetime="2019-11-15T11:28:48+08:00">2019-11-15</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">2.9k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">3 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>代理模式是一个很重要的模式，在我的设计模式文章里面也有关于代理模式的分析，上篇文章我们看了注解，如果在<code>spring</code>中最典型的两个特性一个是<code>IOC</code>即控制反转和<code>AOP</code>即面向切面编程，<code>IOC</code>的实现原理是利用了<code>JAVA</code>的反射技术，那么<code>AOP</code>的实现原理是什么呢？就是动态代理技术，目前动态代理技术主要分为<code>Java</code>自己提供的<code>JDK</code>动态代理技术和<code>CGLIB</code>技术,下面我们看下“JDK的动态代理技术”</p>
+<h2 id="代理模式的定义"><a href="#代理模式的定义" class="headerlink" title=" 代理模式的定义"></a><font color="#8B475D"> 代理模式的定义</font></h2><p>定义：给某个对象提供一个代理对象，并由代理对象控制对于原对象的访问，即客户不直接操控原对象，而是通过代理对象间接地操控原对象。</p>
+<ul>
+<li><code>RealSubject</code> 是原对象（本文把原对象称为”委托对象”），<code>Proxy</code> 是代理对象。</li>
+<li><code>Subject</code> 是委托对象和代理对象都共同实现的接口。</li>
+<li><code>Request()</code> 是委托对象和代理对象共同拥有的方法。</li>
+</ul>
+<p>举个栗子，生活中我们购买火车票可以去火车站买，但是也可以去火车票代售处买，此处的火车票代售处就是火车站购票的代理，即我们在代售点发出买票请求，代售点会把请求发给火车站，火车站把购买成功响应发给代售点，代售点再告诉你。</p>
+<p>但是代售点只能买票，不能退票，而火车站能买票也能退票，因此代理对象支持的操作可能和委托对象的操作有所不同。</p>
+<h2 id="Java实现静态代理示例"><a href="#Java实现静态代理示例" class="headerlink" title=" Java实现静态代理示例"></a><font color="#8B475D"> Java实现静态代理示例</font></h2><p><img src="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-1.png" alt="image"></p>
+<p>代理的实现分为：</p>
+<ul>
+<li>静态代理</li>
+</ul>
+<p>代理类是在编译时就实现好的。也就是说 Java 编译完成后代理类是一个实际的 class 文件。    </p>
+<ul>
+<li>动态代理</li>
+</ul>
+<p>代理类是在运行时生成的。也就是说 Java 编译完之后并没有实际的 class 文件，而是在运行时动态生成的类字节码，并加载到JVM中。 </p>
+<h2 id="Java-实现动态代理"><a href="#Java-实现动态代理" class="headerlink" title=" Java 实现动态代理"></a><font color="#8B475D"> Java 实现动态代理</font></h2><p>几个重要名词:</p>
+<h5 id="几个重要名词"><a href="#几个重要名词" class="headerlink" title="#几个重要名词:"></a>#<font color="#367bdd">几个重要名词:</font></h5><ul>
+<li>委托类和委托对象：委托类是一个类，委托对象是委托类的实例，即原类。</li>
+<li>代理类和代理对象：代理类是一个类，代理对象是代理类的实例。</li>
+</ul>
+<h5 id="Java实现动态代理的大致步骤如下："><a href="#Java实现动态代理的大致步骤如下：" class="headerlink" title="#Java实现动态代理的大致步骤如下："></a>#<font color="#367bdd">Java实现动态代理的大致步骤如下：</font></h5><ul>
+<li>定义一个委托类和公共接口。</li>
+<li>自己定义一个类（调用处理器类，即实现 InvocationHandler 接口），这个类的目的是指定运行时将生成的代理类需要完成的具体任务（包括Preprocess和Postprocess），即代理类调用任何方法都会经过这个调用处理器类（在本文最后一节对此进行解释）。</li>
+<li>生成代理对象（当然也会生成代理类），需要为他指定(1)类加载器对象(2)实现的一系列接口(3)调用处理器类的实例。因此可以看出一个代理对象对应一个委托对象，对应一个调用处理器实例。</li>
+</ul>
+<h5 id="Java-实现动态代理主要涉及以下几个类"><a href="#Java-实现动态代理主要涉及以下几个类" class="headerlink" title="#Java 实现动态代理主要涉及以下几个类:"></a>#<font color="#367bdd">Java 实现动态代理主要涉及以下几个类:</font></h5><ul>
+<li><code>java.lang.reflect.Proxy</code>: 这是生成代理类的主类，通过 <code>Proxy</code> 类生成的代理类都继承了 <code>Proxy</code> 类，即 <code>DynamicProxyClass extends Proxy</code>。</li>
+<li><code>java.lang.reflect.InvocationHandler</code>: 这里称他为”调用处理器”，他是一个接口，我们动态生成的代理类需要完成的具体内容需要自己定义一个类，而这个类必须实现 <code>InvocationHandler</code> 接口。</li>
+</ul>
+<h5 id="Proxy-类主要方法为："><a href="#Proxy-类主要方法为：" class="headerlink" title="#Proxy 类主要方法为："></a>#<font color="#367bdd">Proxy 类主要方法为：</font></h5><p><img src="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-2.png" alt="image"></p>
+<ul>
+<li>这个静态函数的第一个参数是类加载器对象（即哪个类加载器来加载这个代理类到 JVM 的方法区）</li>
+<li>第二个参数是接口（表明你这个代理类需要实现哪些接口）</li>
+<li>第三个参数是调用处理器类实例（指定代理类中具体要干什么）。</li>
+<li>这个函数是 JDK 为了程序员方便创建代理对象而封装的一个函数，因此你调用<code>newProxyInstance()</code>时直接创建了代理对象（略去了创建代理类的代码）。其实他主要完成了以下几个工作：</li>
+</ul>
+<p><img src="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-3.png" alt="image"></p>
+<p><code>Proxy</code> 类还有一些静态方法，比如：</p>
+<ul>
+<li><code>InvocationHandler getInvocationHandler(Object proxy)</code>: 获得代理对象对应的调用处理器对象。</li>
+<li><code>Class getProxyClass(ClassLoader loader, Class[] interfaces)</code>: 根据类加载器和实现的接口获得代理类。</li>
+</ul>
+<p><code>Proxy</code> 类中有一个映射表，映射关系为：<code>(&lt;ClassLoader&gt;,(&lt;Interfaces&gt;,&lt;ProxyClass&gt;) )</code>，可以看出一级key为类加载器，根据这个一级key获得二级映射表，二级key为接口数组，因此可以看出：一个类加载器对象和一个接口数组确定了一个代理类。</p>
+<p>我们写一个简单的例子来阐述 Java 实现动态代理的整个过程：</p>
+<p><img src="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-4.png" alt="image"></p>
+<p><code>InvocationHandler</code> 接口中有方法：<code>invoke(Object proxy, Method method, Object[] args)</code></p>
+<p>这个函数是在代理对象调用任何一个方法时都会调用的，方法不同会导致第二个参数method不同，<strong>第一个参数是代理对象</strong>（表示哪个代理对象调用了method方法，传递来的是），<strong>第二个参数是 Method</strong> 对象（表示哪个方法被调用了），<strong>第三个参数是指定调用方法的参数。</strong></p>
+<p>动态生成的代理类具有几个特点：</p>
+<ul>
+<li>继承 <code>Proxy</code> 类，并实现了在<code>Proxy.newProxyInstance()</code>中提供的接口数组。</li>
+<li><code>public final</code>。</li>
+<li>命名方式为 <code>$ProxyN</code>，其中N会慢慢增加，一开始是 <code>$Proxy1</code>，接下来是<code>$Proxy2…</code>带有<code>$</code>符号的对象就是在程序运行时动态生成的对象。</li>
+<li>有一个参数为 <code>InvocationHandler</code> 的构造函数。这个从 <code>Proxy.newProxyInstance()</code> 函数内部的<code>clazz.getConstructor(new Class[] { InvocationHandler.class })</code> 可以看出。</li>
+</ul>
+<p>Java 实现动态代理的缺点：因为 Java 的单继承特性（每个代理类都继承了<code>Proxy</code> 类），只能针对接口创建代理类，不能针对类创建代理类。</p>
+<h5 id="一个小栗子来看动态代理全过程"><a href="#一个小栗子来看动态代理全过程" class="headerlink" title="#一个小栗子来看动态代理全过程"></a>#<font color="#367bdd">一个小栗子来看动态代理全过程</font></h5><p>假设模拟一个场景，买衣服，正常情况所有人买这件衣服要100块钱。</p>
+<p>定义一个销售接口：</p>
+<p><img src="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-5.png" alt="image"></p>
+<p>一个具体的实现类：</p>
+<p><img src="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-6.png" alt="image"></p>
+<p>那么正常情况大家都要花100才能买这件衣服。但是现在对会员做活动，会员打5折。怎么做呢？正常思维是：增加一个接口，甚至更糟的想法是修改一下这个实现类，都是不好的，那么我们是否想过这样的方案：新建一个新的类，让这个代理类去做相应的逻辑呢？既不用修改原来的代码，而且还很简单就能实现。</p>
+<p>现在写一个代理类：</p>
+<p><img src="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-7.png" alt="image"></p>
+<p>那么调用的时候，一个是会员，一个是普通用户，根据身份调不同的方法即可：</p>
+<p><img src="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-8.png" alt="image"></p>
+<h2 id="Java-动态代理的内部实现"><a href="#Java-动态代理的内部实现" class="headerlink" title="Java 动态代理的内部实现"></a><font color="#8B475D">Java 动态代理的内部实现</font></h2><p>现在我们就会有一个问题： <code>Java</code> 是怎么保证代理对象调用的任何方法都会调用 <code>InvocationHandler</code> 的 <code>invoke()</code> 方法的？</p>
+<p>这就涉及到动态代理的内部实现。假设有一个接口 <code>Subject</code>，且里面有 <code>int request(int i)</code> 方法，则生成的代理类大致如下：</p>
+<p><img src="http://blog-picture-g.test.upcdn.net/javaBasic/javabasic8-9.png" alt="image"></p>
+<p>通过上面的方法就成功调用了 <code>invoke()</code>方法，所以这是代理类中已经注定要去执行 <code>invoke()</code> 方法了。</p>
+<p>这有一篇写的比较生动的阐述了动态代理的含义<a href="https://mp.weixin.qq.com/s?__biz=MzAxOTc0NzExNg==&mid=2665513926&idx=1&sn=1c43c5557ba18fed34f3d68bfed6b8bd&chksm=80d67b85b7a1f2930ede2803d6b08925474090f4127eefbb267e647dff11793d380e09f222a8#rd" target="_blank" rel="noopener">Java帝国之动态代理</a></p>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="96gh'home 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/java基础/" rel="tag"># java基础</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/26/07-基础核心知识点/" rel="next" title="07-基础核心知识点">
+                <i class="fa fa-chevron-left"></i> 07-基础核心知识点
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/11/09-异常/" rel="prev" title="09-异常">
+                09-异常 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="96gh'home">
+            
+              <p class="site-author-name" itemprop="name">96gh'home</p>
+              <div class="site-description motion-element" itemprop="description">闲敲棋子落灯花</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">328</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com" title="GitHub &rarr; https://github.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://weibo.com/yourname" title="Weibo &rarr; https://weibo.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/yourname" title="StackOverflow &rarr; https://stackoverflow.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="/" title="blibili &rarr; "><i class="fa fa-fw fa-globe"></i>blibili</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://google.com/" title="https://google.com/" rel="noopener" target="_blank">谷歌</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://baidu.com/" title="http://baidu.com/" rel="noopener" target="_blank">百度</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联1</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联2</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#代理模式的定义"><span class="nav-number">1.</span> <span class="nav-text"> 代理模式的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java实现静态代理示例"><span class="nav-number">2.</span> <span class="nav-text"> Java实现静态代理示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-实现动态代理"><span class="nav-number">3.</span> <span class="nav-text"> Java 实现动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#几个重要名词"><span class="nav-number">3.0.0.1.</span> <span class="nav-text">#几个重要名词:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Java实现动态代理的大致步骤如下："><span class="nav-number">3.0.0.2.</span> <span class="nav-text">#Java实现动态代理的大致步骤如下：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Java-实现动态代理主要涉及以下几个类"><span class="nav-number">3.0.0.3.</span> <span class="nav-text">#Java 实现动态代理主要涉及以下几个类:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Proxy-类主要方法为："><span class="nav-number">3.0.0.4.</span> <span class="nav-text">#Proxy 类主要方法为：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#一个小栗子来看动态代理全过程"><span class="nav-number">3.0.0.5.</span> <span class="nav-text">#一个小栗子来看动态代理全过程</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-动态代理的内部实现"><span class="nav-number">4.</span> <span class="nav-text">Java 动态代理的内部实现</span></a></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">96gh'home</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">859k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">13:01</span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,0" opacity="0.5" zindex="-1" count="150" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw==">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+  
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;"></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+  
+
+  
+
+</body>
+</html>

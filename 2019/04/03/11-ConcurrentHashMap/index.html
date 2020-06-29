@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-center-simple.min.css?v=1.0.2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/ffavicon32.ico?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon32.ico?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":15,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+
+
+  <meta name="description" content="对于并发场景下，推荐使用线程安全的 concurrentHashMap ，而不是 HashMap 或者是 HashTable ,concurrentHashMap在JDK7和JDK8中的实现原理是不一样的。本文我们来看一下concurrentHashMap的原理。 JDK7实现ConcurrentHashMap 的内部细分了若干个小的 HashMap ，称之为段（ SEGMENT ）。 Concu">
+<meta name="keywords" content="容器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="11-ConcurrentHashMap">
+<meta property="og:url" content="http://yoursite.com/2019/04/03/11-ConcurrentHashMap/index.html">
+<meta property="og:site_name" content="To be or not to be?">
+<meta property="og:description" content="对于并发场景下，推荐使用线程安全的 concurrentHashMap ，而不是 HashMap 或者是 HashTable ,concurrentHashMap在JDK7和JDK8中的实现原理是不一样的。本文我们来看一下concurrentHashMap的原理。 JDK7实现ConcurrentHashMap 的内部细分了若干个小的 HashMap ，称之为段（ SEGMENT ）。 Concu">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/collection/collection7-1.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/collection/collection7-2.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/collection/collection7-3.jpg">
+<meta property="og:updated_time" content="2019-04-03T03:53:48.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="11-ConcurrentHashMap">
+<meta name="twitter:description" content="对于并发场景下，推荐使用线程安全的 concurrentHashMap ，而不是 HashMap 或者是 HashTable ,concurrentHashMap在JDK7和JDK8中的实现原理是不一样的。本文我们来看一下concurrentHashMap的原理。 JDK7实现ConcurrentHashMap 的内部细分了若干个小的 HashMap ，称之为段（ SEGMENT ）。 Concu">
+<meta name="twitter:image" content="http://blog-picture-g.test.upcdn.net/collection/collection7-1.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="To be or not to be?" type="application/atom+xml">
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2019/04/03/11-ConcurrentHashMap/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>11-ConcurrentHashMap | To be or not to be?</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">To be or not to be?</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">gaohan的学习小栈</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>about me</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/gaohanblog/gaohanblog.github.io" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/03/11-ConcurrentHashMap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="96gh'home">
+      <meta itemprop="description" content="闲敲棋子落灯花">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="To be or not to be?">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">11-ConcurrentHashMap
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-03 11:53:48" itemprop="dateCreated datePublished" datetime="2019-04-03T11:53:48+08:00">2019-04-03</time>
+            </span>
+          
+
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">5.7k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">5 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>对于并发场景下，推荐使用线程安全的 <code>concurrentHashMap</code> ，而不是 <code>HashMap</code> 或者是 <code>HashTable</code> ,<code>concurrentHashMap</code>在<code>JDK7</code>和<code>JDK8</code>中的实现原理是不一样的。本文我们来看一下<code>concurrentHashMap</code>的原理。</p>
+<h2 id="JDK7实现"><a href="#JDK7实现" class="headerlink" title="JDK7实现"></a><font color="#8B475D">JDK7实现</font></h2><p><code>ConcurrentHashMap</code> 的内部细分了若干个小的 <code>HashMap</code> ，称之为段（ <code>SEGMENT</code> ）。 <code>ConcurrentHashMap</code> 是一个 <code>Segment</code> 数组，<code>Segment</code> 通过继承 <code>ReentrantLock</code> 来进行加锁，所以每次需要加锁的操作锁住的是一个 <code>segment</code> ，这样只要保证每个 <code>Segment</code> 是线程安全的，也就实现了全局的线程安全。</p>
+<p><img src="http://blog-picture-g.test.upcdn.net/collection/collection7-1.png" alt="image"></p>
+<p>如图所示，是由 <code>Segment</code> 数组、<code>HashEntry</code> 数组组成，和 <code>HashMap</code> 一样，仍然是数组加链表组成。</p>
+<p><code>ConcurrentHashMap</code> 采用了分段锁技术，其中 <code>Segment</code> 继承于 <code>ReentrantLock</code>。不会像<code>HashTable</code> 那样不管是 <code>put</code> 还是 <code>get</code> 操作都需要做同步加锁处理，理论上 <code>ConcurrentHashMap</code> 支持 <code>CurrencyLevel</code>( <code>Segment</code> 数组数量)的线程并发。每当一个线程占用锁访问一个 <code>Segment</code> 时，不会影响到其他的 <code>Segment</code>。</p>
+<h5 id="get方法"><a href="#get方法" class="headerlink" title="#get方法"></a>#<font color="#367bdd">get方法</font></h5><p><code>ConcurrentHashMap</code> 的 <code>get</code> 方法是非常高效的，<strong>因为整个过程都不需要加锁。</strong></p>
+<p>只需要将<code>Key</code>通过<code>Hash</code> 之后定位到具体的 <code>Segment</code> ，再通过一次 <code>Hash</code> 定位到具体的元素上。由于 <code>HashEntry</code> 中的 <code>value</code>属性是用 <code>volatile</code>关键词修饰的，保证了内存可见性，所以每次获取时都是最新值.</p>
+<p>内部 <code>HashEntry</code> 类 ：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">HashEntry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    <span class="keyword">volatile</span> V value;</span><br><span class="line">    <span class="keyword">volatile</span> HashEntry&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line">    HashEntry(<span class="keyword">int</span> hash, K key, V value, HashEntry&lt;K,V&gt; next) &#123;</span><br><span class="line">        <span class="keyword">this</span>.hash = hash;</span><br><span class="line">        <span class="keyword">this</span>.key = key;</span><br><span class="line">        <span class="keyword">this</span>.value = value;</span><br><span class="line">        <span class="keyword">this</span>.next = next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="put方法"><a href="#put方法" class="headerlink" title="#put方法"></a>#<font color="#367bdd">put方法</font></h5><p>虽然 <code>HashEntry</code> 中的 <code>value</code> 是用 <code>volatile</code> 关键词修饰的，但是并不能保证并发的原子性，所以 <code>put</code> 操作时仍然需要加锁处理。</p>
+<p>首先也是通过<code>Key</code>的 <code>Hash</code> 定位到具体的<code>Segment</code>，在 <code>put</code> 之前会进行一次扩容校验。这里比 <code>HashMap</code> 要好的一点是：<code>HashMap</code> 是插入元素之后再看是否需要扩容，有可能扩容之后后续就没有插入就浪费了本次扩容(扩容非常消耗性能)。</p>
+<p>而 <code>ConcurrentHashMap</code> 不一样，它是在将数据插入之前检查是否需要扩容，之后再做插入操作。</p>
+<h5 id="size方法"><a href="#size方法" class="headerlink" title="#size方法"></a>#<font color="#367bdd">size方法</font></h5><p>每个 <code>Segment</code> 都有一个 <code>volatile</code> 修饰的全局变量 <code>count</code> ,求整个 <code>ConcurrentHashMap</code> 的 <code>size</code> 时很明显就是将所有的 <code>count</code> 累加即可。但是 <code>volatile</code> 修饰的变量却不能保证多线程的原子性，所有直接累加很容易出现并发问题。</p>
+<p>但如果每次调用 <code>size</code> 方法将其余的修改操作加锁效率也很低。所以做法是先尝试两次将 <code>count</code> 累加，如果容器的 <code>count</code> 发生了变化再加锁来统计 <code>size</code>。</p>
+<p>在<code>JDK7</code> 中，第一种方案他会使用不加锁的模式去尝试多次计算 <code>ConcurrentHashMap</code> 的 <code>size</code>，最多三次，比较前后两次计算的结果，结果一致就认为当前没有元素加入，计算的结果是准确的。</p>
+<p>第二种方案是如果第一种方案不符合，他就会给每个<code>Segment</code> 加上锁，然后计算 <code>ConcurrentHashMap</code> 的 <code>size</code> 返回。其源码实现:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> <span class="keyword">final</span> Segment&lt;K,V&gt;[] segments = <span class="keyword">this</span>.segments;</span><br><span class="line"> <span class="keyword">int</span> size;</span><br><span class="line"> <span class="keyword">boolean</span> overflow; <span class="comment">// true if size overflows 32 bits</span></span><br><span class="line"> <span class="keyword">long</span> sum;         <span class="comment">// sum of modCounts</span></span><br><span class="line"> <span class="keyword">long</span> last = <span class="number">0L</span>;   <span class="comment">// previous sum</span></span><br><span class="line"> <span class="keyword">int</span> retries = -<span class="number">1</span>; <span class="comment">// first iteration isn't retry</span></span><br><span class="line"> <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="keyword">if</span> (retries++ == RETRIES_BEFORE_LOCK) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; segments.length; ++j)</span><br><span class="line">                ensureSegment(j).lock(); <span class="comment">// force creation</span></span><br><span class="line">    &#125;</span><br><span class="line">    sum = <span class="number">0L</span>;</span><br><span class="line">    size = <span class="number">0</span>;</span><br><span class="line">    overflow = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; segments.length; ++j) &#123;</span><br><span class="line">        Segment&lt;K,V&gt; seg = segmentAt(segments, j);</span><br><span class="line">        <span class="keyword">if</span> (seg != <span class="keyword">null</span>) &#123;</span><br><span class="line">            sum += seg.modCount;</span><br><span class="line">            <span class="keyword">int</span> c = seg.count;</span><br><span class="line">            <span class="keyword">if</span> (c &lt; <span class="number">0</span> || (size += c) &lt; <span class="number">0</span>)</span><br><span class="line">            overflow = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (sum == last)</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">        last = sum; </span><br><span class="line">    &#125;</span><br><span class="line"> &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">     <span class="keyword">if</span> (retries &gt; RETRIES_BEFORE_LOCK) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; segments.length; ++j)</span><br><span class="line">            segmentAt(segments, j).unlock();</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">return</span> overflow ? Integer.MAX_VALUE : size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 锁之前重试次数</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RETRIES_BEFORE_LOCK = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="JDK8实现"><a href="#JDK8实现" class="headerlink" title="JDK8实现"></a><font color="#8B475D">JDK8实现</font></h2><p><img src="http://blog-picture-g.test.upcdn.net/collection/collection7-2.png" alt="image"></p>
+<p><code>jdk8</code> 中的 <code>ConcurrentHashMap</code> 数据结构和实现与 jdk7 还是有着明显的差异。</p>
+<p>其中抛弃了原有的 <code>Segment</code> 分段锁，而采用了 <code>CAS + synchronized</code> 来保证并发安全性。</p>
+<p>也将<code>jdk7</code>中存放数据的<code>HashEntry</code> 改为 <code>Node</code>，但作用都是相同的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">       <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">       <span class="keyword">final</span> K key;</span><br><span class="line">       <span class="keyword">volatile</span> V val;</span><br><span class="line">       <span class="keyword">volatile</span> Node&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line">       Node(<span class="keyword">int</span> hash, K key, V val, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">           <span class="keyword">this</span>.hash = hash;</span><br><span class="line">           <span class="keyword">this</span>.key = key;</span><br><span class="line">           <span class="keyword">this</span>.val = val;</span><br><span class="line">           <span class="keyword">this</span>.next = next;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> K <span class="title">getKey</span><span class="params">()</span>       </span>&#123; <span class="keyword">return</span> key; &#125;</span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">getValue</span><span class="params">()</span>     </span>&#123; <span class="keyword">return</span> val; &#125;</span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span>   </span>&#123; <span class="keyword">return</span> key.hashCode() ^ val.hashCode(); &#125;</span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> String <span class="title">toString</span><span class="params">()</span></span>&#123; <span class="keyword">return</span> key + <span class="string">"="</span> + val; &#125;</span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">setValue</span><span class="params">(V value)</span> </span>&#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="put方法-1"><a href="#put方法-1" class="headerlink" title="#put方法"></a>#<font color="#367bdd">put方法</font></h5><p>重点我们来看下<code>put</code>方法。</p>
+<p><img src="http://blog-picture-g.test.upcdn.net/collection/collection7-3.jpg" alt="image"></p>
+<ul>
+<li>根据 <code>key</code> 计算出 <code>hashcode</code> 。</li>
+<li>判断是否需要进行初始化。</li>
+<li><code>f</code>即为当前 <code>key</code> 定位出的 <code>Node</code>，如果为空表示当前位置可以写入数据，利用 <code>CAS</code> 尝试写入，失败则自旋保证成功。</li>
+<li>如果当前位置的 <code>hashcode == MOVED == -1</code>,则需要进行扩容。</li>
+<li>如果都不满足(不需要初始化、Node不为空、不需要扩容)，则利用 <code>synchronized</code> 锁写入数据。</li>
+<li>如果数量大于 <code>TREEIFY_THRESHOLD</code> 则要转换为红黑树。</li>
+</ul>
+<h5 id="get方法-1"><a href="#get方法-1" class="headerlink" title="#get方法"></a>#<font color="#367bdd">get方法</font></h5><ul>
+<li>根据计算出来的 <code>hashcode</code> 寻址，如果就在桶上那么直接返回值。</li>
+<li>如果是红黑树那就按照树的方式获取值。</li>
+<li>都不满足那就按照链表的方式遍历获取值。</li>
+</ul>
+<h5 id="size方法-1"><a href="#size方法-1" class="headerlink" title="#size方法"></a>#<font color="#367bdd">size方法</font></h5><p><code>JDK8</code>实现相比<code>JDK7</code> 简单很多，只有一种方案，我们直接看 <code>size()</code>代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> n = sumCount();</span><br><span class="line">        <span class="keyword">return</span> ((n &lt; <span class="number">0L</span>) ? <span class="number">0</span> :</span><br><span class="line">                (n &gt; (<span class="keyword">long</span>)Integer.MAX_VALUE) ? Integer.MAX_VALUE :</span><br><span class="line">                (<span class="keyword">int</span>)n);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">sumCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        CounterCell[] as = counterCells; </span><br><span class="line">        CounterCell a;</span><br><span class="line">        <span class="comment">//获取baseCount值</span></span><br><span class="line">        <span class="keyword">long</span> sum = baseCount;</span><br><span class="line">        <span class="comment">//遍历CounterCell数组全部加到baseCount上，它们的和就是size</span></span><br><span class="line">        <span class="keyword">if</span> (as != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; as.length; ++i) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((a = as[i]) != <span class="keyword">null</span>)</span><br><span class="line">                    sum += a.value;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sum;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>可能你会有所疑问，<code>ConcurrentHashMap</code> 中的 <code>baseCount</code> 属性不就是记录的所有键值对的总数吗？直接返回它不就行了吗？</p>
+<p>之所以没有这么做，是因为我们的 <code>addCount</code> 方法用于 <code>CAS</code>更新 <code>baseCount</code>，但很有可能在高并发的情况下，更新失败，那么这些节点虽然已经被添加到哈希表中了，但是数量却没有被统计。</p>
+<p>还好，<code>addCount</code>方法在更新<code>baseCount</code> 失败的时候，会调用<code>fullAddCount</code> 将这些失败的结点包装成一个 <code>CounterCell</code>对象，保存在 <code>CounterCell</code> 数组中。那么整张表实际的 <code>size</code> 其实是 <code>baseCount</code> 加上 <code>CounterCell</code>数组中元素的个数。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><font color="#8B475D">总结</font></h2><ul>
+<li>并发情况下请使用<code>concurrentHashMap</code></li>
+<li>在<code>jdk7</code>中，用的是分段锁，默认是12段，那么并发量最多也就12.<ul>
+<li><code>get</code>不加锁，第一次<code>hash</code>定位到<code>segment</code>，第二次<code>hash</code>定位到元素，元素值是用<code>volatile</code>保证内存可见性。</li>
+<li><code>put</code>需要加锁，<code>hash</code>定位到<code>segment</code>后，先检查是否需要扩容再插入。</li>
+<li><code>size</code>先使用不加锁的模式去尝试多次计算<code>size</code>，最多三次，比较前后两次计算的结果，结果一致就认为当前没有元素加入；如果不一致，给每个 <code>Segment</code> 加上锁再依次去计算个数</li>
+</ul>
+</li>
+<li>在<code>jdk8</code>中，采用了<code>CAS + synchronized</code>来保证并发安全性<ul>
+<li><code>put</code>的过程比较复杂 简单来说主要通过下面这几个阶段。先计算<code>hash</code>定位到<code>node</code>—&gt;判断是否需要初始化—&gt;如果<code>node</code>为空则表示可以插入，用<code>cas</code>插入—&gt;判断是否需要扩容—&gt;如果不需要初始化，Node不为空还需要判断是否需要扩容—&gt;则用<code>synchorized</code>锁写入数据—&gt;判断是否需要转换成红黑树。</li>
+<li><code>get</code>就比较简单，直接根据<code>hash</code>定位到<code>node</code>，然后以链表或者红黑树的方式拿到.</li>
+<li><code>size</code>方法就一种方案：<code>baseCount+CounterCell[]</code>中所有元素</li>
+</ul>
+</li>
+</ul>
+<p>整理自：</p>
+<p><a href="https://crossoverjie.top/JCSprout/#/thread/ConcurrentHashMap?id=size-%e6%96%b9%e6%b3%95" target="_blank" rel="noopener">ConcurrentHashMap 实现原理</a></p>
+<p><a href="https://www.jianshu.com/p/e99e3fcface4" target="_blank" rel="noopener">为并发而生的 ConcurrentHashMap（Java 8）</a></p>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="96gh'home 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/容器/" rel="tag"># 容器</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/01/10-LinkedHashSet/" rel="next" title="10-LinkedHashSet">
+                <i class="fa fa-chevron-left"></i> 10-LinkedHashSet
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/05/12-HashMap死循环问题/" rel="prev" title="12-HashMap死循环问题">
+                12-HashMap死循环问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="96gh'home">
+            
+              <p class="site-author-name" itemprop="name">96gh'home</p>
+              <div class="site-description motion-element" itemprop="description">闲敲棋子落灯花</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">328</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com" title="GitHub &rarr; https://github.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://weibo.com/yourname" title="Weibo &rarr; https://weibo.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/yourname" title="StackOverflow &rarr; https://stackoverflow.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="/" title="blibili &rarr; "><i class="fa fa-fw fa-globe"></i>blibili</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://google.com/" title="https://google.com/" rel="noopener" target="_blank">谷歌</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://baidu.com/" title="http://baidu.com/" rel="noopener" target="_blank">百度</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联1</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联2</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK7实现"><span class="nav-number">1.</span> <span class="nav-text">JDK7实现</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#get方法"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">#get方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#put方法"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">#put方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#size方法"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">#size方法</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK8实现"><span class="nav-number">2.</span> <span class="nav-text">JDK8实现</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#put方法-1"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">#put方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#get方法-1"><span class="nav-number">2.0.0.2.</span> <span class="nav-text">#get方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#size方法-1"><span class="nav-number">2.0.0.3.</span> <span class="nav-text">#size方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">96gh'home</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">859k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">13:01</span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,0" opacity="0.5" zindex="-1" count="150" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw==">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+  
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;"></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+  
+
+  
+
+</body>
+</html>

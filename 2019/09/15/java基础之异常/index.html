@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-center-simple.min.css?v=1.0.2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/ffavicon32.ico?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon32.ico?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":15,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+
+
+  <meta name="description" content="在程序中异常是一个比较普遍的问题，下面我们对异常来仔细分析下。">
+<meta name="keywords" content="java基础">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java基础之异常">
+<meta property="og:url" content="http://yoursite.com/2019/09/15/java基础之异常/index.html">
+<meta property="og:site_name" content="To be or not to be?">
+<meta property="og:description" content="在程序中异常是一个比较普遍的问题，下面我们对异常来仔细分析下。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://note.youdao.com/favicon.ico">
+<meta property="og:image" content="https://note.youdao.com/favicon.ico">
+<meta property="og:updated_time" content="2019-10-19T07:15:03.101Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java基础之异常">
+<meta name="twitter:description" content="在程序中异常是一个比较普遍的问题，下面我们对异常来仔细分析下。">
+<meta name="twitter:image" content="https://note.youdao.com/favicon.ico">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="To be or not to be?" type="application/atom+xml">
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2019/09/15/java基础之异常/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>java基础之异常 | To be or not to be?</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">To be or not to be?</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">gaohan的学习小栈</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>about me</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/gaohanblog/gaohanblog.github.io" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/15/java基础之异常/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="96gh'home">
+      <meta itemprop="description" content="闲敲棋子落灯花">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="To be or not to be?">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">java基础之异常
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-15 01:38:51" itemprop="dateCreated datePublished" datetime="2019-09-15T01:38:51+08:00">2019-09-15</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-19 15:15:03" itemprop="dateModified" datetime="2019-10-19T15:15:03+08:00">2019-10-19</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">6.8k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">6 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在程序中异常是一个比较普遍的问题，下面我们对异常来仔细分析下。</p>
+<a id="more"></a>
+
+<p><code>Throwable</code> 可以用来表示任何可以作为异常抛出的类，分为两种： <code>Error</code> 和 <code>Exception</code>。</p>
+<p>下面我们看看一些比较普遍的程序异常：</p>
+<p><img src="https://note.youdao.com/favicon.ico" alt="image"></p>
+<h2 id="什么是Java异常"><a href="#什么是Java异常" class="headerlink" title=" 什么是Java异常"></a><font color="#8B475D"> 什么是Java异常</font></h2><p>异常是发生在程序执行过程中阻碍程序正常执行的错误事件。比如：用户输入错误数据、硬件故障、网络阻塞等都会导致出现异常。</p>
+<p>只要在Java语句执行中产生了异常，一个异常对象就会被创建，JRE就会试图寻找异常处理程序来处理异常。如果有合适的异常处理程序，异常对象就会被异常处理程序接管，否则，将引发运行环境异常，JRE终止程序执行。</p>
+<p>Java异常处理框架只能处理<strong>运行时错误</strong>，编译错误不在其考虑范围之内。</p>
+<h2 id="Error和Exception的区别"><a href="#Error和Exception的区别" class="headerlink" title=" Error和Exception的区别"></a><font color="#8B475D"> Error和Exception的区别</font></h2><p>Error：是程序无法处理的错误，表示运行应用程序中较严重问题。大多数错误与代码编写者执行的操作无关，而表示代码运行时 JVM出现的问题。</p>
+<p>例如，Java虚拟机运行错误，当 JVM 不再有继续执行操作所需的内存资源时，将出现<code>OutOfMemoryError</code>。这些异常发生时，Java虚拟机一般会选择线程终止。</p>
+<h2 id="Java异常处理中有哪些关键字？"><a href="#Java异常处理中有哪些关键字？" class="headerlink" title=" Java异常处理中有哪些关键字？"></a><font color="#8B475D"> Java异常处理中有哪些关键字？</font></h2><ul>
+<li><code>throw</code>:有时我们需要显式地创建并抛出异常对象来终止程序的正常执行。<code>throw</code>关键字用来抛出并处理运行时异常。</li>
+<li><code>throws</code>:当我们抛出任何“被检查的异常<code>(checked exception)</code>”并不处理时，需要在方法签名中使用关键字<code>throws</code>来告知调用程序此方法可能会抛出的异常。调用方法可能会处理这些异常，或者同样用<code>throws</code>来将异常传给上一级调用方法。<code>throws</code>关键字后可接多个潜在异常，甚至是在<code>main()</code>中也可以使用<code>throws</code>。</li>
+<li><code>try-catch</code>:我们在代码中用<code>try-catch</code>块处理异常。当然，一个<code>try</code>块之后可以有多个<code>catch</code>子句，<code>try-catch</code>块也能嵌套。每个<code>catch</code>块必须接受一个（且仅有一个）代表异常类型的参数。</li>
+<li><code>finally:finally</code>块是可选的，并且只能配合<code>try-catch</code>一起使用。虽然异常终止了程序的执行，但是还有一些打开的资源没有被关闭，因此，我们能使用<code>finally</code>进行关闭。不管异常有没有出现，<code>finally</code>块总会被执行。</li>
+</ul>
+<h2 id="异常的层级"><a href="#异常的层级" class="headerlink" title="异常的层级"></a><font color="#8B475D">异常的层级</font></h2><ul>
+<li><code>Throwable</code>是所有异常的父类，它有两个直接子对象<code>Error</code>,<code>Exception</code>，其中<code>Exception</code>又被继续划分为“被检查的异常(<code>checked exception</code>)”和”运行时的异常（<code>runtime exception</code>,即不受检查的异常）”。 <code>Error</code>表示编译时和系统错误，通常不能预期和恢复，比如硬件故障、JVM崩溃、内存不足等。</li>
+<li>被检查的异常（<code>Checked exception</code>）在程序中能预期，并要尝试修复，如<code>FileNotFoundException</code>。我们必须捕获此类异常，并为用户提供有用信息和合适日志来进行调试。<code>Exception</code>是所有被检查的异常的父类。</li>
+<li>运行时异常（<code>Runtime Exception</code>）又称为不受检查异常，源于糟糕的编程。比如我们检索数组元素之前必须确认数组的长度，否则就可能会抛出数组越界<code>ArrayIndexOutOfBoundException</code>运行时异常。<code>RuntimeException</code>是所有运行时异常的父类。</li>
+</ul>
+<h2 id="Java-7-ARM-Automatic-Resource-Management，自动资源管理-特征和多个catch块的使用"><a href="#Java-7-ARM-Automatic-Resource-Management，自动资源管理-特征和多个catch块的使用" class="headerlink" title="Java 7 ARM(Automatic Resource Management，自动资源管理)特征和多个catch块的使用"></a><font color="#8B475D">Java 7 ARM(Automatic Resource Management，自动资源管理)特征和多个catch块的使用</font></h2><p>如果一个<code>try</code>块中有多个异常要被捕获，<code>catch</code>块中的代码会变丑陋的同时还要用多余的代码来记录异常。有鉴于此，<code>Java 7</code>的一个新特征是：一个<code>catch</code>子句中可以捕获多个异常。示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">catch</span>(IOException | SQLException | Exception ex)&#123;</span><br><span class="line">     logger.error(ex);</span><br><span class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> MyException(ex.getMessage());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>大多数情况下，当忘记关闭资源或因资源耗尽出现运行时异常时，我们只是用<code>finally</code>子句来关闭资源。这些异常很难调试，我们需要深入到资源使用的每一步来确定是否已关闭。因此，Java 7用<code>try-with-resources</code>进行了改进：在<code>try</code>子句中能创建一个资源对象，当程序的执行完<code>try-catch</code>之后，运行环境自动关闭资源。</p>
+<blockquote>
+<p>利用Try-Catch-Finally管理资源（旧的代码风格）：</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printFile</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    InputStream input = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        input = <span class="keyword">new</span> FileInputStream(<span class="string">"file.txt"</span>);<span class="comment">//可能发生异常1</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> data = input.read();<span class="comment">//可能发生异常2</span></span><br><span class="line">        <span class="keyword">while</span>(data != -<span class="number">1</span>)&#123;</span><br><span class="line">            System.out.print((<span class="keyword">char</span>) data);</span><br><span class="line">            data = input.read();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(input != <span class="keyword">null</span>)&#123;</span><br><span class="line">            input.close();<span class="comment">//可能发生异常3</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的程序<code>try</code>语句块抛出一个异常，然后<code>finally</code>语句块被执行,那假如<code>finally</code>代码块与异常怎么办，哪个异常会根据调用栈向外传播。</p>
+<p>即使<code>try</code>语句块中抛出的异常与异常传播更相关，最终还是<code>finally</code>语句块中抛出的异常会根据调用栈向外传播。</p>
+<blockquote>
+<p>在java7中，对于上面的例子可以用try-with-resource 结构这样写：</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printFileJava7</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>(FileInputStream input = <span class="keyword">new</span> FileInputStream(<span class="string">"file.txt"</span>)) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> data = input.read();</span><br><span class="line">        <span class="keyword">while</span>(data != -<span class="number">1</span>)&#123;</span><br><span class="line">            System.out.print((<span class="keyword">char</span>) data);</span><br><span class="line">            data = input.read();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当<code>try</code>语句块运行结束时，<code>FileInputStream</code> 会被自动关闭。这是因为<code>FileInputStream</code> 实现了java中的<code>java.lang.AutoCloseable</code>接口。所有实现了这个接口的类都可以在<code>try-with-resources</code>结构中使用。</p>
+<p>当<code>try-with-resources</code>结构中抛出一个异常，同时<code>FileInputStream</code>被关闭时（调用了其<code>close</code>方法）也抛出一个异常，<code>try-with-resources</code>结构中抛出的异常会向外传播，而<code>FileInputStream</code>被关闭时抛出的异常被抑制了。</p>
+<blockquote>
+<p>你可以在块中使用多个资源而且这些资源都能被自动地关闭。下面是例子：</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printFileJava7</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>(  FileInputStream     input         = <span class="keyword">new</span> FileInputStream(<span class="string">"file.txt"</span>);</span><br><span class="line">          BufferedInputStream bufferedInput = <span class="keyword">new</span> BufferedInputStream(input)</span><br><span class="line">    ) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> data = bufferedInput.read();</span><br><span class="line">        <span class="keyword">while</span>(data != -<span class="number">1</span>)&#123;</span><br><span class="line">            System.out.print((<span class="keyword">char</span>) data);</span><br><span class="line">    data = bufferedInput.read();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这些资源将按照他们被创建顺序的逆序来关闭。首先<code>BufferedInputStream</code> 会被关闭，然后<code>FileInputStream</code>会被关闭。</p>
+<p>这个<code>try-with-resources</code>结构里不仅能够操作java内置的类。你也可以在自己的类中实现<code>java.lang.AutoCloseable</code>接口，然后在<code>try-with-resources</code>结构里使用这个类。</p>
+<p><code>AutoClosable</code> 接口仅仅有一个方法，接口定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AutoClosable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>任何实现了这个接口的方法都可以在<code>try-with-resources</code>结构中使用。下面是一个简单的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyAutoClosable</span> <span class="keyword">implements</span> <span class="title">AutoCloseable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doIt</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyAutoClosable doing it!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyAutoClosable closed!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>doIt()</code>是方法不是<code>AutoClosable</code> 接口中的一部分，之所以实现这个方法是因为我们想要这个类除了关闭方法外还能做点其他事。</p>
+<p>下面是<code>MyAutoClosable</code> 在<code>try-with-resources</code>结构中使用的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyAutoClosable</span> <span class="keyword">implements</span> <span class="title">AutoCloseable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doIt</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyAutoClosable doing it!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyAutoClosable closed!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>doIt()</code>是方法不是<code>AutoClosable</code> 接口中的一部分，之所以实现这个方法是因为我们想要这个类除了关闭方法外还能做点其他事。</p>
+<p>下面是<code>MyAutoClosable</code> 在<code>try-with-resources</code>结构中使用的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">myAutoClosable</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>(MyAutoClosable myAutoClosable = <span class="keyword">new</span> MyAutoClosable())&#123;</span><br><span class="line">        myAutoClosable.doIt();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//执行结果：</span></span><br><span class="line">MyAutoClosable doing it!</span><br><span class="line">MyAutoClosable closed!</span><br></pre></td></tr></table></figure>
+
+<p>通过上面这些你可以看到，不论<code>try-catch</code>中使用的资源是自己创造的还是java内置的类型，<code>try-with-resources</code>都是一个能够确保资源能被正确地关闭的强大方法。</p>
+<h2 id="在Java中throw与throws关键字之间的区别？"><a href="#在Java中throw与throws关键字之间的区别？" class="headerlink" title="在Java中throw与throws关键字之间的区别？"></a><font color="#8B475D">在Java中throw与throws关键字之间的区别？</font></h2><p><code>throws</code>用于在方法签名中声明此方法可能抛出的异常，而<code>throw</code>关键字则是中断程序的执行并移交异常对象到运行时进行处理。</p>
+<h2 id="在Java中怎么写自定义的异常？"><a href="#在Java中怎么写自定义的异常？" class="headerlink" title="在Java中怎么写自定义的异常？"></a><font color="#8B475D">在Java中怎么写自定义的异常？</font></h2><p>我们能继承<code>Exception</code>类或其任何子类来实现自己的自定义异常类。这自定义异常类可以有自己变量和方法来传递错误代码或其它异常相关信息来处理异常。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyException</span>  <span class="keyword">extends</span> <span class="title">RuntimeException</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer code = ResponseEnum.ERROR.getCode();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HappyBikeException</span><span class="params">(Integer code,String msg)</span></span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(msg);</span><br><span class="line">        <span class="keyword">this</span>.code = code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HappyBikeException</span><span class="params">(String msg)</span></span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(msg);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="在main方法抛出异常时发生了什么？"><a href="#在main方法抛出异常时发生了什么？" class="headerlink" title="在main方法抛出异常时发生了什么？"></a><font color="#8B475D">在main方法抛出异常时发生了什么？</font></h2><p>当<code>main</code>方法抛出异常时，Java运行时间终止并在控制台打印异常信息和按照程序执行栈轨迹抛出异常。</p>
+<h2 id="try、catch、finally三个语句块应注意的问题"><a href="#try、catch、finally三个语句块应注意的问题" class="headerlink" title="try、catch、finally三个语句块应注意的问题"></a><font color="#8B475D">try、catch、finally三个语句块应注意的问题</font></h2><ul>
+<li><code>try</code>、<code>catch</code>、<code>finally</code>三个语句块均不能单独使用，三者可以组成 <code>try…catch…finally</code>、<code>try…catch</code>、<code>try…finally</code>三种结构，<code>catch</code>语句可以有一个或多个，<code>finally</code>语句最多一个。</li>
+<li><code>try、catch、finally</code>三个代码块中变量的作用域为代码块内部，分别独立而不能相互访问。如果要在三个块中都可以访问，则需要将变量定义到这些块的外面。</li>
+<li>多个<code>catch</code>块时候，只会匹配其中一个异常类并执行<code>catch</code>块代码，而不会再执行别的<code>catch</code>块，并且匹配<code>catch</code>语句的顺序是由上到下。</li>
+<li>无论程序是否有异常，并且无论之间<code>try-catch</code>是否顺利执行完毕，都会执行<code>finally</code>语句。在以下特殊情况下，<code>finally</code>块不会执行：在<code>finally</code>语句块中发生异常；在前面代码中使用了<code>System.exit()</code>退出程序；程序所在线程死亡；关闭<code>cpu</code>。</li>
+<li>当当程序执行<code>try</code>块，<code>catch</code>块时遇到<code>return</code>语句或者<code>throw</code>语句，这两个语句都会导致该方法立即结束，所以系统并不会立即执行这两个语句，而是去寻找该异常处理流程中的<code>finally</code>块，如果没有<code>finally</code>块，程序立即执行<code>return</code>语句或者<code>throw</code>语句，方法终止。如果有<code>finally</code>块，系统立即开始执行<code>finally</code>块，只有当<code>finally</code>块执行完成后，系统才会再次跳回来执行<code>try</code>块、<code>catch</code>块里的<code>return</code>或<code>throw</code>语句，如果<code>finally</code>块里也使用了<code>return</code>或<code>throw</code>等导致方法终止的语句，则<code>finally</code>块已经终止了方法，不用再跳回去执行<code>try</code>块、<code>catch</code>块里的任何代码了。</li>
+</ul>
+<h2 id="解释Java中的异常处理流程"><a href="#解释Java中的异常处理流程" class="headerlink" title="解释Java中的异常处理流程"></a><font color="#8B475D">解释Java中的异常处理流程</font></h2><p> <img src="https://note.youdao.com/favicon.ico" alt="image"></p>
+<h2 id="常见的runtime-exception"><a href="#常见的runtime-exception" class="headerlink" title="常见的runtime exception"></a><font color="#8B475D">常见的runtime exception</font></h2><ul>
+<li>NullPointerException：当操作一个空引用时会出现此错误。</li>
+<li>NumberFormatException：数据格式转换出现问题时出现此异常。</li>
+<li>ClassCastException：强制类型转换类型不匹配时出现此异常。</li>
+<li>ArrayIndexOutOfBoundsException：数组下标越界，当使用一个不存在的数组下标时出现此异常。</li>
+<li>ArithmeticException：数学运行错误时出现此异常</li>
+<li>IllegalArgumentException：参数异常<br>抛出的异常表明向方法传递了一个不合法或不正确的参数</li>
+<li>ClassNotFoundException：找不到类异常<br>当应用试图根据字符串形式的类名构造类</li>
+<li>NoSuchMethodException ： 方法未找到异常</li>
+<li>FileNotFoundException ：文件未找到异常</li>
+</ul>
+<p>参考：</p>
+<ul>
+<li><a href="http://www.importnew.com/7383.html" target="_blank" rel="noopener">http://www.importnew.com/7383.html</a></li>
+<li><a href="http://www.importnew.com/7541.html" target="_blank" rel="noopener">http://www.importnew.com/7541.html</a></li>
+<li><a href="http://www.importnew.com/7820.html" target="_blank" rel="noopener">http://www.importnew.com/7820.html</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="96gh'home 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/java基础/" rel="tag"># java基础</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/14/16-桥接模式/" rel="next" title="16-桥接模式">
+                <i class="fa fa-chevron-left"></i> 16-桥接模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/15/18-组合模式/" rel="prev" title="18-组合模式">
+                18-组合模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="96gh'home">
+            
+              <p class="site-author-name" itemprop="name">96gh'home</p>
+              <div class="site-description motion-element" itemprop="description">闲敲棋子落灯花</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">328</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com" title="GitHub &rarr; https://github.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://weibo.com/yourname" title="Weibo &rarr; https://weibo.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/yourname" title="StackOverflow &rarr; https://stackoverflow.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="/" title="blibili &rarr; "><i class="fa fa-fw fa-globe"></i>blibili</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://google.com/" title="https://google.com/" rel="noopener" target="_blank">谷歌</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://baidu.com/" title="http://baidu.com/" rel="noopener" target="_blank">百度</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联1</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联2</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是Java异常"><span class="nav-number">1.</span> <span class="nav-text"> 什么是Java异常</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Error和Exception的区别"><span class="nav-number">2.</span> <span class="nav-text"> Error和Exception的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java异常处理中有哪些关键字？"><span class="nav-number">3.</span> <span class="nav-text"> Java异常处理中有哪些关键字？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常的层级"><span class="nav-number">4.</span> <span class="nav-text">异常的层级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-7-ARM-Automatic-Resource-Management，自动资源管理-特征和多个catch块的使用"><span class="nav-number">5.</span> <span class="nav-text">Java 7 ARM(Automatic Resource Management，自动资源管理)特征和多个catch块的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在Java中throw与throws关键字之间的区别？"><span class="nav-number">6.</span> <span class="nav-text">在Java中throw与throws关键字之间的区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在Java中怎么写自定义的异常？"><span class="nav-number">7.</span> <span class="nav-text">在Java中怎么写自定义的异常？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在main方法抛出异常时发生了什么？"><span class="nav-number">8.</span> <span class="nav-text">在main方法抛出异常时发生了什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#try、catch、finally三个语句块应注意的问题"><span class="nav-number">9.</span> <span class="nav-text">try、catch、finally三个语句块应注意的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解释Java中的异常处理流程"><span class="nav-number">10.</span> <span class="nav-text">解释Java中的异常处理流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见的runtime-exception"><span class="nav-number">11.</span> <span class="nav-text">常见的runtime exception</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">96gh'home</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">859k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">13:01</span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,0" opacity="0.5" zindex="-1" count="150" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw==">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+  
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;"></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+  
+
+  
+
+</body>
+</html>

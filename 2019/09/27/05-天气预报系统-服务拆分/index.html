@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-center-simple.min.css?v=1.0.2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/ffavicon32.ico?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon32.ico?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":15,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+
+
+  <meta name="description" content="至此我们完成了天气预报基本的一些功能，因为这个课程是一个微服务的课程，下面我们后面来学习如何将服务拆分开来，初步认识下什么是SOA架构，什么是微服务。 单体架构我们熟悉的MVC架构就是一个单体架构。 用户&amp;lt;—&amp;gt;表示层(controller)&amp;lt;—&amp;gt;业务层(service)&amp;lt;—&amp;gt;数据访问层(dao)&amp;lt;—&amp;gt;数据库 单块结构的优缺点：    优点 缺点">
+<meta name="keywords" content="springcloud">
+<meta property="og:type" content="article">
+<meta property="og:title" content="05-天气预报系统-服务拆分">
+<meta property="og:url" content="http://yoursite.com/2019/09/27/05-天气预报系统-服务拆分/index.html">
+<meta property="og:site_name" content="To be or not to be?">
+<meta property="og:description" content="至此我们完成了天气预报基本的一些功能，因为这个课程是一个微服务的课程，下面我们后面来学习如何将服务拆分开来，初步认识下什么是SOA架构，什么是微服务。 单体架构我们熟悉的MVC架构就是一个单体架构。 用户&amp;lt;—&amp;gt;表示层(controller)&amp;lt;—&amp;gt;业务层(service)&amp;lt;—&amp;gt;数据访问层(dao)&amp;lt;—&amp;gt;数据库 单块结构的优缺点：    优点 缺点">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/weather/weaher6-1.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/weather/weaher6-2.png">
+<meta property="og:image" content="http://blog-picture-g.test.upcdn.net/weather/weaher6-3.png">
+<meta property="og:updated_time" content="2019-09-27T08:54:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="05-天气预报系统-服务拆分">
+<meta name="twitter:description" content="至此我们完成了天气预报基本的一些功能，因为这个课程是一个微服务的课程，下面我们后面来学习如何将服务拆分开来，初步认识下什么是SOA架构，什么是微服务。 单体架构我们熟悉的MVC架构就是一个单体架构。 用户&amp;lt;—&amp;gt;表示层(controller)&amp;lt;—&amp;gt;业务层(service)&amp;lt;—&amp;gt;数据访问层(dao)&amp;lt;—&amp;gt;数据库 单块结构的优缺点：    优点 缺点">
+<meta name="twitter:image" content="http://blog-picture-g.test.upcdn.net/weather/weaher6-1.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="To be or not to be?" type="application/atom+xml">
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2019/09/27/05-天气预报系统-服务拆分/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>05-天气预报系统-服务拆分 | To be or not to be?</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">To be or not to be?</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">gaohan的学习小栈</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>about me</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/gaohanblog/gaohanblog.github.io" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/27/05-天气预报系统-服务拆分/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="96gh'home">
+      <meta itemprop="description" content="闲敲棋子落灯花">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="To be or not to be?">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">05-天气预报系统-服务拆分
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-27 16:54:11" itemprop="dateCreated datePublished" datetime="2019-09-27T16:54:11+08:00">2019-09-27</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/springcloud/" itemprop="url" rel="index"><span itemprop="name">springcloud</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">3.2k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">3 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>至此我们完成了天气预报基本的一些功能，因为这个课程是一个微服务的课程，下面我们后面来学习如何将服务拆分开来，初步认识下什么是SOA架构，什么是微服务。</p>
+<h2 id="单体架构"><a href="#单体架构" class="headerlink" title="单体架构"></a><font color="#8B475D">单体架构</font></h2><p>我们熟悉的MVC架构就是一个单体架构。</p>
+<p>用户&lt;—&gt;表示层(<code>controller</code>)&lt;—&gt;业务层(<code>service</code>)&lt;—&gt;数据访问层(<code>dao</code>)&lt;—&gt;数据库</p>
+<p>单块结构的优缺点：</p>
+<table>
+<thead>
+<tr>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>功能划分清楚</td>
+<td>功能仍然太大</td>
+</tr>
+<tr>
+<td>层次关系良好</td>
+<td>支付周期变长</td>
+</tr>
+<tr>
+<td>每一层独立</td>
+<td>升级风险高</td>
+</tr>
+<tr>
+<td>部署简单</td>
+<td>维护成本增加</td>
+</tr>
+<tr>
+<td>技术单一</td>
+<td>可伸缩性差</td>
+</tr>
+<tr>
+<td>用人成本低</td>
+<td>监控困难</td>
+</tr>
+</tbody></table>
+<h2 id="单体架构如何转化为微服务"><a href="#单体架构如何转化为微服务" class="headerlink" title="单体架构如何转化为微服务"></a><font color="#8B475D">单体架构如何转化为微服务</font></h2><h5 id="什么是SOA？"><a href="#什么是SOA？" class="headerlink" title="#什么是SOA？"></a>#<font color="#367bdd">什么是SOA？</font></h5><blockquote>
+<p><code>SOA</code>是一种设计方法，其中包含多个服务，而服务之间通过配合最终会提供一系列功能。一个服务通常以独立的形式存在于操作系统进程中。服务之间通过网络调用，而非采用进程内调用的方式进行通信。</p>
+</blockquote>
+<h5 id="SOA和微服务的理解"><a href="#SOA和微服务的理解" class="headerlink" title="#SOA和微服务的理解"></a>#<font color="#367bdd">SOA和微服务的理解</font></h5><p>怎么去理解那，我在网上找到一个段子，比较容易理解SOA和微服务：</p>
+<blockquote>
+<p>话说1979年，又是一个春天，莆田乡下的赤脚医生吴大牛被改革的春风吹的心潮澎湃，说干就干，吴大牛趁着夜色朦胧找大队支书汇报了思想，第二天就承包了村卫生室，开启了自己的在医疗圈的传奇历程。乡村诊所大家都知道，没什么复杂的东东，房子只有一间，一个大柜台中间隔开，一半是诊疗兼候诊区，一半是药房，看病就直接找医生，如果前面有人就自己找个位子坐下，排队等一会，秩序倒也井然，看完病了医生直接给抓药，然后下一个继续，也不需要护士和药剂师，吴大牛一个人全部包办。</p>
+</blockquote>
+<blockquote>
+<p>辛辛苦苦忙碌了十年，时间来到了八九年，又是一个春天，昔日的单身汉吴大牛已成为十里八乡的知名人物，媳妇娶上了不说，家里还增加了一对双胞胎儿子，二层的小洋房也甚是气派。可是也有烦心事，尽管乡村诊所扩大到了两间，媳妇还偶尔能去帮帮忙，但是医生还是只有自己一个，天天从早忙到晚挣的都是一份钱，想多挣点怎么办？吴大牛日思夜想，还真给他想出来一招，怎么办，扩大规模，多招几个医生一起干。原来吴大牛只能治头疼脑热和跌打损伤，现在新招了一个医科大学的毕业生刘小明专治疑难杂症，又从邻村请来了老大夫李阿花专治妇科病，现在一个普通的小诊所就变成了有三个独立科室加一个公共药房（吴大牛媳妇负责）的小医院了，吴大牛是外科主任兼院长，收入那可比之前翻了三番。人逢喜事精神爽，大牛院长请县里的书法名家为新医院书写了牌匾–“博爱医院”，挑了一个黄道吉日正式挂了上去。</p>
+</blockquote>
+<blockquote>
+<p>一晃十年过去了，又是一个春天，吴大牛的博爱医院已经发展到了内科外科妇科五官科骨科生殖科六个科室，每个科室3到5名医生不等，也耗费巨资购进了血夜化验B超等先进仪器，大牛院长也早已脱离了医疗一线，成为了专职的管理者，但是医院的大事小事大家都找他，就这三十多号员工搞的他每天是焦头烂额，想再扩大规模实在是有心无力了。要说还是大学生有水平，老部下刘小明给大牛院长献了一计，把各个科室独立出去，让各个科室主任自己管理，大牛院长只管科室之间的协调和医院发展的大事，这样既能调动基层的积极性，又能把大牛院长解放出来扩大生产抓大事谋大事，岂不妙哉？就这样，博爱医院的新一轮改革轰轰烈烈的展开了。</p>
+</blockquote>
+<blockquote>
+<p>又是一个十年，还是在哪个春天，大牛院长已成为本地知名的企业家，博爱医院也发展到了二十三个科室数百名员工，发展中也出现了新问题，由于各个科室独立挂号、收费、化验，有的科室整天忙忙碌碌效益好，有的科室就相对平庸些，连分到的各种检查仪器都不能满负荷运行，整个医院养了不少闲人。这时候大牛院长视野也开阔了，请来了管理专家进行了顶层设计，把原来分散到各个科室的非核心服务全部收归集中管理，把原来二十三个挂号窗口整合为十个，二十三个收费窗口整合为八个，集中布设在一楼大厅为全院服务，还把分散在各个科室的检查仪器集中起来成立独立的检验科，也为全院服务，这样人人有活干，整个医院的服务能力又上了一个新台阶，这轮改革后博爱医院通过了各级部门的鉴定成为了远近驰名的三甲医院，吴大牛也换身一变成为了博爱集团的CEO兼董事长，下一步就准备IPO上市了。</p>
+</blockquote>
+<blockquote>
+<p>说到这里大家可能有点糊涂，这个跟微服务有嘛关系？<br>大牛诊所的1.0阶段就相当于软件开发的单体结构，一个程序员打天下，从头编到尾，很难做大做强。<br>大牛诊所的2.0阶段就相当于软件开发的垂直结构，各科室按照业务划分，很容易横向扩展。<br>博爱医院的1.0阶段就相当于软件开发的SOA结构，除了药房（数据库）外各个服务独立提供（科室主任负责），但需要大牛院长（ESB总线）来协调。<br>博爱医院的2.0阶段就相当于软件开发的微服务结构，公共服务院内共享，科室主任管理功能弱化（只管医生业务），优点是扩容方便，哪个部门缺人直接加，不用看上下游，资源利用率高，人员和设备效率高。<br>为什么要变呢？小诊所有小诊所的活法，大医院有大医院的骄傲。无他，天下熙熙，皆为利来；天下攘攘，皆为利往。<br><a href="https://blog.csdn.net/HistoryCreator/article/details/89059711" target="_blank" rel="noopener">https://blog.csdn.net/HistoryCreator/article/details/89059711</a></p>
+</blockquote>
+<h5 id="设计原则"><a href="#设计原则" class="headerlink" title="#设计原则"></a>#<font color="#367bdd">设计原则</font></h5><ul>
+<li>拆分足够微：划分比较细，但是也不能太细，增加管理问题</li>
+<li>轻量级通信：rest，rpc等方式在网络上通信</li>
+<li>单一职责原则：高内聚，低耦合，确定服务边界</li>
+</ul>
+<h2 id="微服务系统设计"><a href="#微服务系统设计" class="headerlink" title="微服务系统设计"></a><font color="#8B475D">微服务系统设计</font></h2><p><strong>服务拆分</strong>—-》<strong>服务注册</strong>—-》<strong>服务发现</strong>—-》<strong>服务消费</strong>(调用另外一个服务)—-》<strong>统一入口</strong>(服务很多的时候难以管理需要有一个统一的入口)—-》<strong>配置管理</strong>(管理每个服务的配置信息)—-》<strong>熔断机制</strong>(保护系统避免崩溃)—-》<strong>自动扩展</strong>(根据负荷自动扩展集群)</p>
+<h2 id="微服务拆分的意义"><a href="#微服务拆分的意义" class="headerlink" title="微服务拆分的意义"></a><font color="#8B475D">微服务拆分的意义</font></h2><ul>
+<li>易于实现</li>
+<li>易于部署</li>
+<li>易于维护</li>
+<li>易于更新</li>
+</ul>
+<p>我们天气预报系统可以差分为：</p>
+<ul>
+<li>天气数据采集服务：数据采集和数据存储</li>
+<li>天气预报服务：数据展示</li>
+<li>天气数据API：数据查询</li>
+<li>城市数据API：数据查询</li>
+</ul>
+<h2 id="现有天气预报体统的弊端"><a href="#现有天气预报体统的弊端" class="headerlink" title="现有天气预报体统的弊端"></a><font color="#8B475D">现有天气预报体统的弊端</font></h2><h5 id="弊端"><a href="#弊端" class="headerlink" title="#弊端"></a>#<font color="#367bdd">弊端</font></h5><ul>
+<li>大而全，所有功能都掺杂在一起，混杂了太多的功能，不满足软件设计的单一职责原则。</li>
+<li>难以理解，当我们这个项目越来越大，系统的代码量会越来越对，让我们难以理解，从而倒置难以维护，也不利于扩展。</li>
+</ul>
+<h5 id="改造需求"><a href="#改造需求" class="headerlink" title="#改造需求"></a>#<font color="#367bdd">改造需求</font></h5><p>那问题出来了，为了解决“大而全”的问题需要把当前的业务拆分细化，服务模块的业务尽量单一。微服务可以支持水平扩展，如果有需要还应能实现微服务间的简单调用。</p>
+<h2 id="项目拆分"><a href="#项目拆分" class="headerlink" title="项目拆分"></a><font color="#8B475D">项目拆分</font></h2><h5 id="不同模块拆分"><a href="#不同模块拆分" class="headerlink" title="#不同模块拆分"></a>#<font color="#367bdd">不同模块拆分</font></h5><p>上面我们说到了如何将项目拆分成不同的模块，保持每个模块功能尽量单一。</p>
+<ul>
+<li>天气数据采集服务：数据采集和数据存储</li>
+<li>天气预报服务：数据展示</li>
+<li>天气数据API：数据查询</li>
+<li>城市数据API：数据查询</li>
+</ul>
+<p>我们将根据原来项目中不同的业务中的相互调用来这样拆分：</p>
+<p><img src="http://blog-picture-g.test.upcdn.net/weather/weaher6-1.png" alt="image"></p>
+<h5 id="代码拆分"><a href="#代码拆分" class="headerlink" title="#代码拆分"></a>#<font color="#367bdd">代码拆分</font></h5><p><img src="http://blog-picture-g.test.upcdn.net/weather/weaher6-2.png" alt="image"></p>
+<h5 id="数据流向"><a href="#数据流向" class="headerlink" title="#数据流向"></a>#<font color="#367bdd">数据流向</font></h5><p>项目中我们数据有两块来源，1是第三方的天气数据根据第三方api获取，2是城市数据列表我们可以直接储存在xml文件中，根据城市api来获取。</p>
+<p>我们第三方天气数据服务根据城市列表服务来采集数据，同时城市列表服务也将提供给天气预报服务。具体数据流向如下图所示：</p>
+<p><img src="http://blog-picture-g.test.upcdn.net/weather/weaher6-3.png" alt="image"></p>
+<h2 id="通信设计"><a href="#通信设计" class="headerlink" title="通信设计"></a><font color="#8B475D">通信设计</font></h2><ul>
+<li>天气数据接口：<ul>
+<li>城市ID调用方式：<code>Get/weather/cityId/{cityId}</code></li>
+<li>参数：<code>cityId</code>为城市<code>ID</code></li>
+<li>城市名称调用方式：<code>Get/weather/cityName/{cityName}</code></li>
+<li>参数：<code>cityName</code>为城市名称</li>
+</ul>
+</li>
+<li>天气预报接口<ul>
+<li>调用方式：<code>Get/report/cityId/{cityId}</code></li>
+<li>参数：<code>cityId</code>为城市<code>ID</code></li>
+</ul>
+</li>
+<li>城市数据接口<ul>
+<li>调用方式：<code>Get.citys</code></li>
+<li>参数：无（根据xml列表获取）</li>
+</ul>
+</li>
+</ul>
+<h2 id="存储设计"><a href="#存储设计" class="headerlink" title="存储设计"></a><font color="#8B475D">存储设计</font></h2><p>我们这个项目没有用到传统关系型数据库，因为数据不需要频繁的保存历史记录所以适用于<code>NoSql</code>方式，将数据存储在<code>redis</code>中可以提高访问速度和第三方接口的调用，相对于传统关系型数据库更有优势。</p>
+<p>城市列表存储在xml文件中，城市列表基本上不变所以比较适合直接存储在静态文件中。</p>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="96gh'home 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/springcloud/" rel="tag"># springcloud</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/26/32-责任链模式/" rel="next" title="32-责任链模式">
+                <i class="fa fa-chevron-left"></i> 32-责任链模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/29/06-天气预报系统-拆分系统/" rel="prev" title="06-天气预报系统-拆分系统">
+                06-天气预报系统-拆分系统 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="96gh'home">
+            
+              <p class="site-author-name" itemprop="name">96gh'home</p>
+              <div class="site-description motion-element" itemprop="description">闲敲棋子落灯花</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">328</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com" title="GitHub &rarr; https://github.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://weibo.com/yourname" title="Weibo &rarr; https://weibo.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/yourname" title="StackOverflow &rarr; https://stackoverflow.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="/" title="blibili &rarr; "><i class="fa fa-fw fa-globe"></i>blibili</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://google.com/" title="https://google.com/" rel="noopener" target="_blank">谷歌</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://baidu.com/" title="http://baidu.com/" rel="noopener" target="_blank">百度</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联1</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联2</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#单体架构"><span class="nav-number">1.</span> <span class="nav-text">单体架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单体架构如何转化为微服务"><span class="nav-number">2.</span> <span class="nav-text">单体架构如何转化为微服务</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#什么是SOA？"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">#什么是SOA？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#SOA和微服务的理解"><span class="nav-number">2.0.0.2.</span> <span class="nav-text">#SOA和微服务的理解</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#设计原则"><span class="nav-number">2.0.0.3.</span> <span class="nav-text">#设计原则</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#微服务系统设计"><span class="nav-number">3.</span> <span class="nav-text">微服务系统设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#微服务拆分的意义"><span class="nav-number">4.</span> <span class="nav-text">微服务拆分的意义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现有天气预报体统的弊端"><span class="nav-number">5.</span> <span class="nav-text">现有天气预报体统的弊端</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#弊端"><span class="nav-number">5.0.0.1.</span> <span class="nav-text">#弊端</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#改造需求"><span class="nav-number">5.0.0.2.</span> <span class="nav-text">#改造需求</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目拆分"><span class="nav-number">6.</span> <span class="nav-text">项目拆分</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#不同模块拆分"><span class="nav-number">6.0.0.1.</span> <span class="nav-text">#不同模块拆分</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#代码拆分"><span class="nav-number">6.0.0.2.</span> <span class="nav-text">#代码拆分</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据流向"><span class="nav-number">6.0.0.3.</span> <span class="nav-text">#数据流向</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通信设计"><span class="nav-number">7.</span> <span class="nav-text">通信设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#存储设计"><span class="nav-number">8.</span> <span class="nav-text">存储设计</span></a></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">96gh'home</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">859k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">13:01</span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,0" opacity="0.5" zindex="-1" count="150" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw==">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+  
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;"></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+  
+
+  
+
+</body>
+</html>

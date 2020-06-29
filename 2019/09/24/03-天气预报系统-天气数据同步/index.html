@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-center-simple.min.css?v=1.0.2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/ffavicon32.ico?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon32.ico?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":15,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+
+
+  <meta name="description" content="上文我们添加了redis实现了缓存，本文我们需要一个定时器定时去自动获取一下最新的信息。由于本项目实现比较简单就可以用quartz来实现。 quartz如何整合数据需要定时地刷新，不能等到用户来获取的时候才更新，这里用最常用的quartz定时器来实现。 首先时引入依赖： 1234&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boo">
+<meta name="keywords" content="springcloud">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-天气预报系统-天气数据同步">
+<meta property="og:url" content="http://yoursite.com/2019/09/24/03-天气预报系统-天气数据同步/index.html">
+<meta property="og:site_name" content="To be or not to be?">
+<meta property="og:description" content="上文我们添加了redis实现了缓存，本文我们需要一个定时器定时去自动获取一下最新的信息。由于本项目实现比较简单就可以用quartz来实现。 quartz如何整合数据需要定时地刷新，不能等到用户来获取的时候才更新，这里用最常用的quartz定时器来实现。 首先时引入依赖： 1234&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boo">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-24T03:54:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="03-天气预报系统-天气数据同步">
+<meta name="twitter:description" content="上文我们添加了redis实现了缓存，本文我们需要一个定时器定时去自动获取一下最新的信息。由于本项目实现比较简单就可以用quartz来实现。 quartz如何整合数据需要定时地刷新，不能等到用户来获取的时候才更新，这里用最常用的quartz定时器来实现。 首先时引入依赖： 1234&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boo">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="To be or not to be?" type="application/atom+xml">
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2019/09/24/03-天气预报系统-天气数据同步/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>03-天气预报系统-天气数据同步 | To be or not to be?</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">To be or not to be?</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">gaohan的学习小栈</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>about me</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/gaohanblog/gaohanblog.github.io" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/24/03-天气预报系统-天气数据同步/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="96gh'home">
+      <meta itemprop="description" content="闲敲棋子落灯花">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="To be or not to be?">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">03-天气预报系统-天气数据同步
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-24 11:54:11" itemprop="dateCreated datePublished" datetime="2019-09-24T11:54:11+08:00">2019-09-24</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/springcloud/" itemprop="url" rel="index"><span itemprop="name">springcloud</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">12k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">11 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上文我们添加了<code>redis</code>实现了缓存，本文我们需要一个定时器定时去自动获取一下最新的信息。由于本项目实现比较简单就可以用<code>quartz</code>来实现。</p>
+<h2 id="quartz如何整合"><a href="#quartz如何整合" class="headerlink" title="quartz如何整合"></a><font color="#8B475D">quartz如何整合</font></h2><p>数据需要定时地刷新，不能等到用户来获取的时候才更新，这里用最常用的<code>quartz</code>定时器来实现。</p>
+<p>首先时引入依赖：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-quartz&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>下面定义一个执行的任务，先什么都不干，就打印一句话即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeatherDataSyncJob</span> <span class="keyword">extends</span> <span class="title">QuartzJobBean</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">executeInternal</span><span class="params">(JobExecutionContext context)</span> <span class="keyword">throws</span> JobExecutionException </span>&#123;</span><br><span class="line">        log.info(<span class="string">"开始数据同步天气!"</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面要定义配置类：</p>
+<p>首先是要定义这个任务的细节：<code>JobDetail</code>，就是说我们配置的这个<code>quartz</code>里面的任务是谁？给他起个名字啥的。</p>
+<p>后面个是定义触发器，决定了刚才定义的这个<code>JobDetail</code>多长时间执行一次。拉取信息到redis我们半个小时获取一次。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//更新频率</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TIME = <span class="number">30</span>*<span class="number">60</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义一个jobDetail,就是注册一个定时任务，具体如何执行时在WeatherDataSyncJobDetail中定义</span></span><br><span class="line"><span class="comment">//具体何时执行，是下面的Trigger定义</span></span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> JobDetail <span class="title">weatherDataSyncJobDetail</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> JobBuilder.newJob(WeatherDataSyncJob.class).withIdentity(<span class="string">"WeatherDataSyncJob"</span>)</span><br><span class="line">    .storeDurably().build();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Trigger</span></span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Trigger <span class="title">weatherDataSyncTrigger</span><span class="params">()</span></span>&#123;</span><br><span class="line">    SimpleScheduleBuilder schedBuilder = SimpleScheduleBuilder.simpleSchedule()</span><br><span class="line">            .withIntervalInSeconds(TIME).repeatForever();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> TriggerBuilder.newTrigger().forJob(weatherDataSyncJobDetail()).withIdentity(<span class="string">"weatherDataSyncTrigger"</span>)</span><br><span class="line">            .withSchedule(schedBuilder).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="拉取城市信息"><a href="#拉取城市信息" class="headerlink" title="拉取城市信息"></a><font color="#8B475D">拉取城市信息</font></h2><p>网站:<a href="http://mobile.weather.com.cn/js/citylist.xml" target="_blank" rel="noopener">http://mobile.weather.com.cn/js/citylist.xml</a>(现在网站获取不到，我们可以在网上找其他方法)</p>
+<p>比如我将河南省的单独拿出来：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">c</span> <span class="attr">c1</span>=<span class="string">"0"</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180101"</span> <span class="attr">d2</span>=<span class="string">"郑州"</span> <span class="attr">d3</span>=<span class="string">"zhengzhou"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180102"</span> <span class="attr">d2</span>=<span class="string">"巩义"</span> <span class="attr">d3</span>=<span class="string">"gongyi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180103"</span> <span class="attr">d2</span>=<span class="string">"荥阳"</span> <span class="attr">d3</span>=<span class="string">"yingyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180104"</span> <span class="attr">d2</span>=<span class="string">"登封"</span> <span class="attr">d3</span>=<span class="string">"dengfeng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180105"</span> <span class="attr">d2</span>=<span class="string">"新密"</span> <span class="attr">d3</span>=<span class="string">"xinmi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180106"</span> <span class="attr">d2</span>=<span class="string">"新郑"</span> <span class="attr">d3</span>=<span class="string">"xinzheng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180107"</span> <span class="attr">d2</span>=<span class="string">"中牟"</span> <span class="attr">d3</span>=<span class="string">"zhongmou"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180201"</span> <span class="attr">d2</span>=<span class="string">"安阳"</span> <span class="attr">d3</span>=<span class="string">"anyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180202"</span> <span class="attr">d2</span>=<span class="string">"汤阴"</span> <span class="attr">d3</span>=<span class="string">"tangyin"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180203"</span> <span class="attr">d2</span>=<span class="string">"滑县"</span> <span class="attr">d3</span>=<span class="string">"huaxian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180204"</span> <span class="attr">d2</span>=<span class="string">"内黄"</span> <span class="attr">d3</span>=<span class="string">"neihuang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180205"</span> <span class="attr">d2</span>=<span class="string">"林州"</span> <span class="attr">d3</span>=<span class="string">"linzhou"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180301"</span> <span class="attr">d2</span>=<span class="string">"新乡"</span> <span class="attr">d3</span>=<span class="string">"xinxiang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180302"</span> <span class="attr">d2</span>=<span class="string">"获嘉"</span> <span class="attr">d3</span>=<span class="string">"huojia"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180303"</span> <span class="attr">d2</span>=<span class="string">"原阳"</span> <span class="attr">d3</span>=<span class="string">"yuanyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180304"</span> <span class="attr">d2</span>=<span class="string">"辉县"</span> <span class="attr">d3</span>=<span class="string">"huixian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180305"</span> <span class="attr">d2</span>=<span class="string">"卫辉"</span> <span class="attr">d3</span>=<span class="string">"weihui"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180306"</span> <span class="attr">d2</span>=<span class="string">"延津"</span> <span class="attr">d3</span>=<span class="string">"yanjin"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180307"</span> <span class="attr">d2</span>=<span class="string">"封丘"</span> <span class="attr">d3</span>=<span class="string">"fengqiu"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180308"</span> <span class="attr">d2</span>=<span class="string">"长垣"</span> <span class="attr">d3</span>=<span class="string">"zhangyuan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180401"</span> <span class="attr">d2</span>=<span class="string">"许昌"</span> <span class="attr">d3</span>=<span class="string">"xuchang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180402"</span> <span class="attr">d2</span>=<span class="string">"鄢陵"</span> <span class="attr">d3</span>=<span class="string">"yanling"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180403"</span> <span class="attr">d2</span>=<span class="string">"襄城"</span> <span class="attr">d3</span>=<span class="string">"xiangcheng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180404"</span> <span class="attr">d2</span>=<span class="string">"长葛"</span> <span class="attr">d3</span>=<span class="string">"zhangge"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180405"</span> <span class="attr">d2</span>=<span class="string">"禹州"</span> <span class="attr">d3</span>=<span class="string">"yuzhou"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180501"</span> <span class="attr">d2</span>=<span class="string">"平顶山"</span> <span class="attr">d3</span>=<span class="string">"pingdingshan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180502"</span> <span class="attr">d2</span>=<span class="string">"郏县"</span> <span class="attr">d3</span>=<span class="string">"jiaxian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180503"</span> <span class="attr">d2</span>=<span class="string">"宝丰"</span> <span class="attr">d3</span>=<span class="string">"baofeng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180504"</span> <span class="attr">d2</span>=<span class="string">"汝州"</span> <span class="attr">d3</span>=<span class="string">"ruzhou"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180505"</span> <span class="attr">d2</span>=<span class="string">"叶县"</span> <span class="attr">d3</span>=<span class="string">"yexian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180506"</span> <span class="attr">d2</span>=<span class="string">"舞钢"</span> <span class="attr">d3</span>=<span class="string">"wugang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180507"</span> <span class="attr">d2</span>=<span class="string">"鲁山"</span> <span class="attr">d3</span>=<span class="string">"lushan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180601"</span> <span class="attr">d2</span>=<span class="string">"信阳"</span> <span class="attr">d3</span>=<span class="string">"xinyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180602"</span> <span class="attr">d2</span>=<span class="string">"息县"</span> <span class="attr">d3</span>=<span class="string">"xixian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180603"</span> <span class="attr">d2</span>=<span class="string">"罗山"</span> <span class="attr">d3</span>=<span class="string">"luoshan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180604"</span> <span class="attr">d2</span>=<span class="string">"光山"</span> <span class="attr">d3</span>=<span class="string">"guangshan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180605"</span> <span class="attr">d2</span>=<span class="string">"新县"</span> <span class="attr">d3</span>=<span class="string">"xinxian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180606"</span> <span class="attr">d2</span>=<span class="string">"淮滨"</span> <span class="attr">d3</span>=<span class="string">"huaibin"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180607"</span> <span class="attr">d2</span>=<span class="string">"潢川"</span> <span class="attr">d3</span>=<span class="string">"huangchuan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180608"</span> <span class="attr">d2</span>=<span class="string">"固始"</span> <span class="attr">d3</span>=<span class="string">"gushi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180609"</span> <span class="attr">d2</span>=<span class="string">"商城"</span> <span class="attr">d3</span>=<span class="string">"shangcheng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180610"</span> <span class="attr">d2</span>=<span class="string">"鸡公山"</span> <span class="attr">d3</span>=<span class="string">"jigongshan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180701"</span> <span class="attr">d2</span>=<span class="string">"南阳"</span> <span class="attr">d3</span>=<span class="string">"nanyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180702"</span> <span class="attr">d2</span>=<span class="string">"南召"</span> <span class="attr">d3</span>=<span class="string">"nanzhao"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180703"</span> <span class="attr">d2</span>=<span class="string">"方城"</span> <span class="attr">d3</span>=<span class="string">"fangcheng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180704"</span> <span class="attr">d2</span>=<span class="string">"社旗"</span> <span class="attr">d3</span>=<span class="string">"sheqi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180705"</span> <span class="attr">d2</span>=<span class="string">"西峡"</span> <span class="attr">d3</span>=<span class="string">"xixia"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180706"</span> <span class="attr">d2</span>=<span class="string">"内乡"</span> <span class="attr">d3</span>=<span class="string">"neixiang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180707"</span> <span class="attr">d2</span>=<span class="string">"镇平"</span> <span class="attr">d3</span>=<span class="string">"zhenping"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180708"</span> <span class="attr">d2</span>=<span class="string">"淅川"</span> <span class="attr">d3</span>=<span class="string">"xichuan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180709"</span> <span class="attr">d2</span>=<span class="string">"新野"</span> <span class="attr">d3</span>=<span class="string">"xinye"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180710"</span> <span class="attr">d2</span>=<span class="string">"唐河"</span> <span class="attr">d3</span>=<span class="string">"tanghe"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180711"</span> <span class="attr">d2</span>=<span class="string">"邓州"</span> <span class="attr">d3</span>=<span class="string">"dengzhou"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180712"</span> <span class="attr">d2</span>=<span class="string">"桐柏"</span> <span class="attr">d3</span>=<span class="string">"tongbai"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180801"</span> <span class="attr">d2</span>=<span class="string">"开封"</span> <span class="attr">d3</span>=<span class="string">"kaifeng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180802"</span> <span class="attr">d2</span>=<span class="string">"杞县"</span> <span class="attr">d3</span>=<span class="string">"qixian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180803"</span> <span class="attr">d2</span>=<span class="string">"尉氏"</span> <span class="attr">d3</span>=<span class="string">"weishi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180804"</span> <span class="attr">d2</span>=<span class="string">"通许"</span> <span class="attr">d3</span>=<span class="string">"tongxu"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180805"</span> <span class="attr">d2</span>=<span class="string">"兰考"</span> <span class="attr">d3</span>=<span class="string">"lankao"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180901"</span> <span class="attr">d2</span>=<span class="string">"洛阳"</span> <span class="attr">d3</span>=<span class="string">"luoyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180902"</span> <span class="attr">d2</span>=<span class="string">"新安"</span> <span class="attr">d3</span>=<span class="string">"xinan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180903"</span> <span class="attr">d2</span>=<span class="string">"孟津"</span> <span class="attr">d3</span>=<span class="string">"mengjin"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180904"</span> <span class="attr">d2</span>=<span class="string">"宜阳"</span> <span class="attr">d3</span>=<span class="string">"yiyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180905"</span> <span class="attr">d2</span>=<span class="string">"洛宁"</span> <span class="attr">d3</span>=<span class="string">"luoning"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180906"</span> <span class="attr">d2</span>=<span class="string">"伊川"</span> <span class="attr">d3</span>=<span class="string">"yichuan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180907"</span> <span class="attr">d2</span>=<span class="string">"嵩县"</span> <span class="attr">d3</span>=<span class="string">"songxian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180908"</span> <span class="attr">d2</span>=<span class="string">"偃师"</span> <span class="attr">d3</span>=<span class="string">"yanshi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180909"</span> <span class="attr">d2</span>=<span class="string">"栾川"</span> <span class="attr">d3</span>=<span class="string">"luanchuan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101180910"</span> <span class="attr">d2</span>=<span class="string">"汝阳"</span> <span class="attr">d3</span>=<span class="string">"ruyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181001"</span> <span class="attr">d2</span>=<span class="string">"商丘"</span> <span class="attr">d3</span>=<span class="string">"shangqiu"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181002"</span> <span class="attr">d2</span>=<span class="string">"睢阳区"</span> <span class="attr">d3</span>=<span class="string">"suiyangqu"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181003"</span> <span class="attr">d2</span>=<span class="string">"睢县"</span> <span class="attr">d3</span>=<span class="string">"suixian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181004"</span> <span class="attr">d2</span>=<span class="string">"民权"</span> <span class="attr">d3</span>=<span class="string">"minquan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181005"</span> <span class="attr">d2</span>=<span class="string">"虞城"</span> <span class="attr">d3</span>=<span class="string">"yucheng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181006"</span> <span class="attr">d2</span>=<span class="string">"柘城"</span> <span class="attr">d3</span>=<span class="string">"zhecheng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181007"</span> <span class="attr">d2</span>=<span class="string">"宁陵"</span> <span class="attr">d3</span>=<span class="string">"ningling"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181008"</span> <span class="attr">d2</span>=<span class="string">"夏邑"</span> <span class="attr">d3</span>=<span class="string">"xiayi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181009"</span> <span class="attr">d2</span>=<span class="string">"永城"</span> <span class="attr">d3</span>=<span class="string">"yongcheng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181101"</span> <span class="attr">d2</span>=<span class="string">"焦作"</span> <span class="attr">d3</span>=<span class="string">"jiaozuo"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181102"</span> <span class="attr">d2</span>=<span class="string">"修武"</span> <span class="attr">d3</span>=<span class="string">"xiuwu"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181103"</span> <span class="attr">d2</span>=<span class="string">"武陟"</span> <span class="attr">d3</span>=<span class="string">"wuzhi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181104"</span> <span class="attr">d2</span>=<span class="string">"沁阳"</span> <span class="attr">d3</span>=<span class="string">"qinyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181106"</span> <span class="attr">d2</span>=<span class="string">"博爱"</span> <span class="attr">d3</span>=<span class="string">"boai"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181107"</span> <span class="attr">d2</span>=<span class="string">"温县"</span> <span class="attr">d3</span>=<span class="string">"wenxian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181108"</span> <span class="attr">d2</span>=<span class="string">"孟州"</span> <span class="attr">d3</span>=<span class="string">"mengzhou"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181201"</span> <span class="attr">d2</span>=<span class="string">"鹤壁"</span> <span class="attr">d3</span>=<span class="string">"hebi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181202"</span> <span class="attr">d2</span>=<span class="string">"浚县"</span> <span class="attr">d3</span>=<span class="string">"xunxian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181203"</span> <span class="attr">d2</span>=<span class="string">"淇县"</span> <span class="attr">d3</span>=<span class="string">"qixian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181301"</span> <span class="attr">d2</span>=<span class="string">"濮阳"</span> <span class="attr">d3</span>=<span class="string">"puyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181302"</span> <span class="attr">d2</span>=<span class="string">"台前"</span> <span class="attr">d3</span>=<span class="string">"taiqian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181303"</span> <span class="attr">d2</span>=<span class="string">"南乐"</span> <span class="attr">d3</span>=<span class="string">"nanle"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181304"</span> <span class="attr">d2</span>=<span class="string">"清丰"</span> <span class="attr">d3</span>=<span class="string">"qingfeng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181305"</span> <span class="attr">d2</span>=<span class="string">"范县"</span> <span class="attr">d3</span>=<span class="string">"fanxian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181401"</span> <span class="attr">d2</span>=<span class="string">"周口"</span> <span class="attr">d3</span>=<span class="string">"zhoukou"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181402"</span> <span class="attr">d2</span>=<span class="string">"扶沟"</span> <span class="attr">d3</span>=<span class="string">"fugou"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181403"</span> <span class="attr">d2</span>=<span class="string">"太康"</span> <span class="attr">d3</span>=<span class="string">"taikang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181404"</span> <span class="attr">d2</span>=<span class="string">"淮阳"</span> <span class="attr">d3</span>=<span class="string">"huaiyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181405"</span> <span class="attr">d2</span>=<span class="string">"西华"</span> <span class="attr">d3</span>=<span class="string">"xihua"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181406"</span> <span class="attr">d2</span>=<span class="string">"商水"</span> <span class="attr">d3</span>=<span class="string">"shangshui"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181407"</span> <span class="attr">d2</span>=<span class="string">"项城"</span> <span class="attr">d3</span>=<span class="string">"xiangcheng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181408"</span> <span class="attr">d2</span>=<span class="string">"郸城"</span> <span class="attr">d3</span>=<span class="string">"dancheng"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181409"</span> <span class="attr">d2</span>=<span class="string">"鹿邑"</span> <span class="attr">d3</span>=<span class="string">"luyi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181410"</span> <span class="attr">d2</span>=<span class="string">"沈丘"</span> <span class="attr">d3</span>=<span class="string">"shenqiu"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181411"</span> <span class="attr">d2</span>=<span class="string">"黄泛区"</span> <span class="attr">d3</span>=<span class="string">"huangfanqu"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181501"</span> <span class="attr">d2</span>=<span class="string">"漯河"</span> <span class="attr">d3</span>=<span class="string">"luohe"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181502"</span> <span class="attr">d2</span>=<span class="string">"临颍"</span> <span class="attr">d3</span>=<span class="string">"linying"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181503"</span> <span class="attr">d2</span>=<span class="string">"舞阳"</span> <span class="attr">d3</span>=<span class="string">"wuyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181601"</span> <span class="attr">d2</span>=<span class="string">"驻马店"</span> <span class="attr">d3</span>=<span class="string">"zhumadian"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181602"</span> <span class="attr">d2</span>=<span class="string">"西平"</span> <span class="attr">d3</span>=<span class="string">"xiping"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181603"</span> <span class="attr">d2</span>=<span class="string">"遂平"</span> <span class="attr">d3</span>=<span class="string">"suiping"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181604"</span> <span class="attr">d2</span>=<span class="string">"上蔡"</span> <span class="attr">d3</span>=<span class="string">"shangcai"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181605"</span> <span class="attr">d2</span>=<span class="string">"汝南"</span> <span class="attr">d3</span>=<span class="string">"runan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181606"</span> <span class="attr">d2</span>=<span class="string">"泌阳"</span> <span class="attr">d3</span>=<span class="string">"miyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181607"</span> <span class="attr">d2</span>=<span class="string">"平舆"</span> <span class="attr">d3</span>=<span class="string">"pingyu"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181608"</span> <span class="attr">d2</span>=<span class="string">"新蔡"</span> <span class="attr">d3</span>=<span class="string">"xincai"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181609"</span> <span class="attr">d2</span>=<span class="string">"确山"</span> <span class="attr">d3</span>=<span class="string">"queshan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181610"</span> <span class="attr">d2</span>=<span class="string">"正阳"</span> <span class="attr">d3</span>=<span class="string">"zhengyang"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181701"</span> <span class="attr">d2</span>=<span class="string">"三门峡"</span> <span class="attr">d3</span>=<span class="string">"sanmenxia"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181702"</span> <span class="attr">d2</span>=<span class="string">"灵宝"</span> <span class="attr">d3</span>=<span class="string">"lingbao"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181703"</span> <span class="attr">d2</span>=<span class="string">"渑池"</span> <span class="attr">d3</span>=<span class="string">"mianchi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181704"</span> <span class="attr">d2</span>=<span class="string">"卢氏"</span> <span class="attr">d3</span>=<span class="string">"lushi"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">d</span> <span class="attr">d1</span>=<span class="string">"101181801"</span> <span class="attr">d2</span>=<span class="string">"济源"</span> <span class="attr">d3</span>=<span class="string">"jiyuan"</span> <span class="attr">d4</span>=<span class="string">"河南"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">c</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>思路是这样的，从xml文件中获取所有的城市信息，然后转换为城市列表对象，再去遍历城市中的<code>id</code>，再去根据<code>id</code>拼接获取天气的<code>uri</code>去查询天气，然后重新覆盖<code>redis</code>中的数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeatherDataSyncJob</span> <span class="keyword">extends</span> <span class="title">QuartzJobBean</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CityDataService cityDataService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> WeatherDataService weatherDataService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">executeInternal</span><span class="params">(JobExecutionContext jobExecutionContext)</span> <span class="keyword">throws</span> JobExecutionException </span>&#123;</span><br><span class="line">        <span class="comment">// 获取城市ID列表</span></span><br><span class="line">        log.info(<span class="string">"开始数据同步天气！"</span>);</span><br><span class="line">        List&lt;City&gt; cityList = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            cityList = cityDataService.listCity();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            log.error(<span class="string">"Exception"</span>,e);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//遍历ID获取天气</span></span><br><span class="line">        <span class="keyword">for</span>(City city : cityList)&#123;</span><br><span class="line">            String cityId = city.getCityId();</span><br><span class="line">            log.info(<span class="string">"根据cityId更新了天气信息"</span>+cityId);</span><br><span class="line"></span><br><span class="line">            weatherDataService.syncDateByCityId(cityId);</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">"天气数据同步结束！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体如何读取xml文件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 加载xml文件转换为对象</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Created By gh</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CityDataServiceImpl</span> <span class="keyword">implements</span> <span class="title">CityDataService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;City&gt; <span class="title">listCity</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//  读取xml文件</span></span><br><span class="line">        Resource resource = <span class="keyword">new</span> ClassPathResource(<span class="string">"cityList.xml"</span>);</span><br><span class="line">        BufferedReader br = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(resource.getInputStream(),<span class="string">"utf-8"</span>));</span><br><span class="line">        StringBuffer buffer = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        String line = <span class="string">""</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>((line = br.readLine()) != <span class="keyword">null</span>)&#123;</span><br><span class="line">            buffer.append(line);</span><br><span class="line">        &#125;</span><br><span class="line">        br.close();</span><br><span class="line">        <span class="comment">//xml内容转换为对象</span></span><br><span class="line">        CityList cityList = (CityList) XmlBuilder.xmlStrToObject(CityList.class,buffer.toString());</span><br><span class="line">        <span class="keyword">return</span> cityList.getCityList();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XmlBuilder</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将xml转换为指定的对象</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> clazz</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> xmlStr</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">xmlStrToObject</span><span class="params">(Class&lt;?&gt; clazz,String xmlStr)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Object xmlObject = <span class="keyword">null</span>;</span><br><span class="line">        Reader reader = <span class="keyword">null</span>;</span><br><span class="line">        JAXBContext context = JAXBContext.newInstance(clazz);</span><br><span class="line">        <span class="comment">//XML 转为对象接口</span></span><br><span class="line">        Unmarshaller unmarshaller = context.createUnmarshaller();</span><br><span class="line">        reader = <span class="keyword">new</span> StringReader(xmlStr);</span><br><span class="line">        xmlObject = unmarshaller.unmarshal(reader);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(reader != <span class="keyword">null</span>)&#123;</span><br><span class="line">            reader.close();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> xmlObject;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在上面将xml解析成java对象，我们用到了<code>JAXB</code>,下面我们看下维基百科给他的定义：</p>
+<blockquote>
+<p>JAXB（Java Architecture for XML Binding简称JAXB）允许Java开发人员将Java类映射为XML表示方式。JAXB提供两种主要特性：将一个Java对象序列化为XML，以及反向操作，将XML解析成Java对象。换句话说，JAXB允许以XML格式存储和读取数据，而不需要程序的类结构实现特定的读取XML和保存XML的代码。JAXB是Java EE平台的API之一，同时是Java Web服务开发包（JWSDP）的一部分。JAXB也是Web服务互操作性技术（WSIT）的基础之一. JAXB是J2SE1.6的一部分。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="96gh'home 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/springcloud/" rel="tag"># springcloud</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/24/29-解释器模式/" rel="next" title="29-解释器模式">
+                <i class="fa fa-chevron-left"></i> 29-解释器模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/25/30-状态模式/" rel="prev" title="30-状态模式">
+                30-状态模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="96gh'home">
+            
+              <p class="site-author-name" itemprop="name">96gh'home</p>
+              <div class="site-description motion-element" itemprop="description">闲敲棋子落灯花</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">328</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com" title="GitHub &rarr; https://github.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://weibo.com/yourname" title="Weibo &rarr; https://weibo.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/yourname" title="StackOverflow &rarr; https://stackoverflow.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="/" title="blibili &rarr; "><i class="fa fa-fw fa-globe"></i>blibili</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://google.com/" title="https://google.com/" rel="noopener" target="_blank">谷歌</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://baidu.com/" title="http://baidu.com/" rel="noopener" target="_blank">百度</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联1</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="http://example.com/" rel="noopener" target="_blank">友联2</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#quartz如何整合"><span class="nav-number">1.</span> <span class="nav-text">quartz如何整合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拉取城市信息"><span class="nav-number">2.</span> <span class="nav-text">拉取城市信息</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">96gh'home</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">859k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">13:01</span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,0" opacity="0.5" zindex="-1" count="150" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NTMwNC8yMTgxNw==">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+  
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;"></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+  
+
+  
+
+</body>
+</html>
