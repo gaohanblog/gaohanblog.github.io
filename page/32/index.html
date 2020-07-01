@@ -349,6 +349,190 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/23/06-HashSet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gh">
+      <meta itemprop="description" content="gratitude and love">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="To be or not to be?">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/23/06-HashSet/" class="post-title-link" itemprop="url">06-HashSet</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-23 12:22:48" itemprop="dateCreated datePublished" datetime="2019-03-23T12:22:48+08:00">2019-03-23</time>
+            </span>
+          
+
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">1.1k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><code>HashSet</code> 是一个不允许存储重复元素的集合，它是基于 <code>HashMap</code> 实现的， <code>HashSet</code> 底层使用 <code>HashMap</code> 来保存所有元素，因此 <code>HashSet</code> 的实现比较简单，相关 <code>HashSet</code> 的操作，基本上都是直接调用底层 <code>HashMap</code> 的相关方法来完成。所以只要理解了 <code>HashMap</code>，<code>HashSet</code> 就水到渠成了。</p>
+<h2 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a><font color="#8B475D">成员变量</font></h2><p>首先了解下<code>HashSet</code>的成员变量:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> HashMap&lt;E,Object&gt; map;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Dummy value to associate with an Object in the backing Map</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object PRESENT = <span class="keyword">new</span> Object();</span><br></pre></td></tr></table></figure>
+
+<p>发现主要就两个变量:</p>
+<ul>
+<li><code>map</code> ：用于存放最终数据的。</li>
+<li><code>PRESENT</code> ：是所有写入<code>map</code>的<code>value</code>值。</li>
+</ul>
+<h2 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a><font color="#8B475D">构造方法</font></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashSet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashSet</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">    map = <span class="keyword">new</span> HashMap&lt;&gt;(initialCapacity, loadFactor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>构造函数很简单，直接利用了<code>HashMap</code>初始化了map。</p>
+<h2 id="add"><a href="#add" class="headerlink" title="add"></a><font color="#8B475D">add</font></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.put(e, PRESENT)==<span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>比较关键的就是这个 <code>add()</code> 方法。 可以看出它是将存放的对象当做了 <code>HashMap</code> 的健，<code>value</code> 都是相同的 <code>PRESENT</code> 。由于 <code>HashMap</code> 的 <code>key</code> 是不能重复的，所以每当有重复的值写入到 <code>HashSet</code> 时，<code>value</code> 会被覆盖，但 <code>key</code> 不会受到影响，这样就保证了 <code>HashSet</code> 中只能存放不重复的元素。</p>
+<p>该方法如果添加的是在 <code>HashSet</code> 中不存在的，则返回 <code>true</code>；如果添加的元素已经存在，返回 <code>false</code>。其原因在于我们之前提到的关于 <code>HashMap</code> 的 <code>put</code> 方法。该方法在添加 <code>key</code>不重复的键值对的时候，会返回 <code>null</code>。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><font color="#8B475D">总结</font></h2><p><code>HashSet</code>的原理比较简单，几乎全部借助于 <code>HashMap</code>来实现的。</p>
+<p>所以 <code>HashMap</code>会出现的问题 <code>HashSet</code> 依然不能避免。</p>
+<p><code>hashSet</code>重点和特点都在于前面我们说过的<code>equals</code>和<code>hashcode</code>,保证放入的对象的唯一性。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/20/05-HashMap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2734,235 +2918,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/11/09-异常/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gh">
-      <meta itemprop="description" content="gratitude and love">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="To be or not to be?">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/11/09-异常/" class="post-title-link" itemprop="url">09-异常</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-02-11 09:36:48" itemprop="dateCreated datePublished" datetime="2019-02-11T09:36:48+08:00">2019-02-11</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-18 22:11:48" itemprop="dateModified" datetime="2019-11-18T22:11:48+08:00">2019-11-18</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          <br>
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">本文字数：</span>
-              
-              <span title="本文字数">3.2k</span>
-            </span>
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              
-              <span title="阅读时长">3 分钟</span>
-            </span>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在程序中异常是一个比较普遍的问题，下面我们对异常来仔细分析下。</p>
-<p><code>Throwable</code> 可以用来表示任何可以作为异常抛出的类，分为两种： <code>Error</code> 和 <code>Exception</code>。</p>
-<p>下面我们看看一些比较普遍的程序异常：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/javaBasic/javaBasic9-1.png" alt="image"></p>
-<h2 id="什么是Java异常"><a href="#什么是Java异常" class="headerlink" title=" 什么是Java异常"></a><font color="#8B475D"> 什么是Java异常</font></h2><p>异常是发生在程序执行过程中阻碍程序正常执行的错误事件。比如：用户输入错误数据、硬件故障、网络阻塞等都会导致出现异常。</p>
-<p>只要在Java语句执行中产生了异常，一个异常对象就会被创建，JRE就会试图寻找异常处理程序来处理异常。如果有合适的异常处理程序，异常对象就会被异常处理程序接管，否则，将引发运行环境异常，JRE终止程序执行。</p>
-<p>Java异常处理框架只能处理<strong>运行时错误</strong>，编译错误不在其考虑范围之内。</p>
-<h2 id="Error和Exception的区别"><a href="#Error和Exception的区别" class="headerlink" title=" Error和Exception的区别"></a><font color="#8B475D"> Error和Exception的区别</font></h2><p>Error：是程序无法处理的错误，表示运行应用程序中较严重问题。大多数错误与代码编写者执行的操作无关，而表示代码运行时 JVM出现的问题。</p>
-<p>例如，Java虚拟机运行错误，当 JVM 不再有继续执行操作所需的内存资源时，将出现<code>OutOfMemoryError</code>。这些异常发生时，Java虚拟机一般会选择线程终止。</p>
-<h2 id="Java异常处理中有哪些关键字？"><a href="#Java异常处理中有哪些关键字？" class="headerlink" title=" Java异常处理中有哪些关键字？"></a><font color="#8B475D"> Java异常处理中有哪些关键字？</font></h2><ul>
-<li><code>throw</code>:有时我们需要显式地创建并抛出异常对象来终止程序的正常执行。<code>throw</code>关键字用来抛出并处理运行时异常。</li>
-<li><code>throws</code>:当我们抛出任何“被检查的异常<code>(checked exception)</code>”并不处理时，需要在方法签名中使用关键字<code>throws</code>来告知调用程序此方法可能会抛出的异常。调用方法可能会处理这些异常，或者同样用<code>throws</code>来将异常传给上一级调用方法。<code>throws</code>关键字后可接多个潜在异常，甚至是在<code>main()</code>中也可以使用<code>throws</code>。</li>
-<li><code>try-catch</code>:我们在代码中用<code>try-catch</code>块处理异常。当然，一个<code>try</code>块之后可以有多个<code>catch</code>子句，<code>try-catch</code>块也能嵌套。每个<code>catch</code>块必须接受一个（且仅有一个）代表异常类型的参数。</li>
-<li><code>finally:finally</code>块是可选的，并且只能配合<code>try-catch</code>一起使用。虽然异常终止了程序的执行，但是还有一些打开的资源没有被关闭，因此，我们能使用<code>finally</code>进行关闭。不管异常有没有出现，<code>finally</code>块总会被执行。</li>
-</ul>
-<h2 id="异常的层级"><a href="#异常的层级" class="headerlink" title="异常的层级"></a><font color="#8B475D">异常的层级</font></h2><ul>
-<li><code>Throwable</code>是所有异常的父类，它有两个直接子对象<code>Error</code>,<code>Exception</code>，其中<code>Exception</code>又被继续划分为“被检查的异常(<code>checked exception</code>)”和”运行时的异常（<code>runtime exception</code>,即不受检查的异常）”。 <code>Error</code>表示编译时和系统错误，通常不能预期和恢复，比如硬件故障、JVM崩溃、内存不足等。</li>
-<li>被检查的异常（<code>Checked exception</code>）在程序中能预期，并要尝试修复，如<code>FileNotFoundException</code>。我们必须捕获此类异常，并为用户提供有用信息和合适日志来进行调试。<code>Exception</code>是所有被检查的异常的父类。</li>
-<li>运行时异常（<code>Runtime Exception</code>）又称为不受检查异常，源于糟糕的编程。比如我们检索数组元素之前必须确认数组的长度，否则就可能会抛出数组越界<code>ArrayIndexOutOfBoundException</code>运行时异常。<code>RuntimeException</code>是所有运行时异常的父类。</li>
-</ul>
-<h2 id="在Java中throw与throws关键字之间的区别？"><a href="#在Java中throw与throws关键字之间的区别？" class="headerlink" title="在Java中throw与throws关键字之间的区别？"></a><font color="#8B475D">在Java中throw与throws关键字之间的区别？</font></h2><p><code>throws</code>用于在方法签名中声明此方法可能抛出的异常，而<code>throw</code>关键字则是中断程序的执行并移交异常对象到运行时进行处理。</p>
-<h2 id="在Java中怎么写自定义的异常？"><a href="#在Java中怎么写自定义的异常？" class="headerlink" title="在Java中怎么写自定义的异常？"></a><font color="#8B475D">在Java中怎么写自定义的异常？</font></h2><p>我们能继承<code>Exception</code>类或其任何子类来实现自己的自定义异常类。这自定义异常类可以有自己变量和方法来传递错误代码或其它异常相关信息来处理异常。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyException</span>  <span class="keyword">extends</span> <span class="title">RuntimeException</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer code = ResponseEnum.ERROR.getCode();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HappyBikeException</span><span class="params">(Integer code,String msg)</span></span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(msg);</span><br><span class="line">        <span class="keyword">this</span>.code = code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HappyBikeException</span><span class="params">(String msg)</span></span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(msg);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="在main方法抛出异常时发生了什么？"><a href="#在main方法抛出异常时发生了什么？" class="headerlink" title="在main方法抛出异常时发生了什么？"></a><font color="#8B475D">在main方法抛出异常时发生了什么？</font></h2><p>当<code>main</code>方法抛出异常时，Java运行时间终止并在控制台打印异常信息和按照程序执行栈轨迹抛出异常。</p>
-<h2 id="try、catch、finally三个语句块应注意的问题"><a href="#try、catch、finally三个语句块应注意的问题" class="headerlink" title="try、catch、finally三个语句块应注意的问题"></a><font color="#8B475D">try、catch、finally三个语句块应注意的问题</font></h2><ul>
-<li><code>try</code>、<code>catch</code>、<code>finally</code>三个语句块均不能单独使用，三者可以组成 <code>try…catch…finally</code>、<code>try…catch</code>、<code>try…finally</code>三种结构，<code>catch</code>语句可以有一个或多个，<code>finally</code>语句最多一个。</li>
-<li><code>try、catch、finally</code>三个代码块中变量的作用域为代码块内部，分别独立而不能相互访问。如果要在三个块中都可以访问，则需要将变量定义到这些块的外面。</li>
-<li>多个<code>catch</code>块时候，只会匹配其中一个异常类并执行<code>catch</code>块代码，而不会再执行别的<code>catch</code>块，并且匹配<code>catch</code>语句的顺序是由上到下。</li>
-<li>无论程序是否有异常，并且无论之间<code>try-catch</code>是否顺利执行完毕，都会执行<code>finally</code>语句。在以下特殊情况下，<code>finally</code>块不会执行：在<code>finally</code>语句块中发生异常；在前面代码中使用了<code>System.exit()</code>退出程序；程序所在线程死亡；关闭<code>cpu</code>。</li>
-<li>当当程序执行<code>try</code>块，<code>catch</code>块时遇到<code>return</code>语句或者<code>throw</code>语句，这两个语句都会导致该方法立即结束，所以系统并不会立即执行这两个语句，而是去寻找该异常处理流程中的<code>finally</code>块，如果没有<code>finally</code>块，程序立即执行<code>return</code>语句或者<code>throw</code>语句，方法终止。如果有<code>finally</code>块，系统立即开始执行<code>finally</code>块，只有当<code>finally</code>块执行完成后，系统才会再次跳回来执行<code>try</code>块、<code>catch</code>块里的<code>return</code>或<code>throw</code>语句，如果<code>finally</code>块里也使用了<code>return</code>或<code>throw</code>等导致方法终止的语句，则<code>finally</code>块已经终止了方法，不用再跳回去执行<code>try</code>块、<code>catch</code>块里的任何代码了。</li>
-</ul>
-<h2 id="解释Java中的异常处理流程"><a href="#解释Java中的异常处理流程" class="headerlink" title="解释Java中的异常处理流程"></a><font color="#8B475D">解释Java中的异常处理流程</font></h2><p> <img src="http://blog-picture-g.test.upcdn.net/javaBasic/javaBasic9-2.png" alt="image"></p>
-<h2 id="常见的runtime-exception"><a href="#常见的runtime-exception" class="headerlink" title="常见的runtime exception"></a><font color="#8B475D">常见的runtime exception</font></h2><ul>
-<li>NullPointerException：当操作一个空引用时会出现此错误。</li>
-<li>NumberFormatException：数据格式转换出现问题时出现此异常。</li>
-<li>ClassCastException：强制类型转换类型不匹配时出现此异常。</li>
-<li>ArrayIndexOutOfBoundsException：数组下标越界，当使用一个不存在的数组下标时出现此异常。</li>
-<li>ArithmeticException：数学运行错误时出现此异常</li>
-<li>IllegalArgumentException：参数异常<br>抛出的异常表明向方法传递了一个不合法或不正确的参数</li>
-<li>ClassNotFoundException：找不到类异常<br>当应用试图根据字符串形式的类名构造类</li>
-<li>NoSuchMethodException ： 方法未找到异常</li>
-<li>FileNotFoundException ：文件未找到异常</li>
-</ul>
-<p>参考：</p>
-<ul>
-<li><a href="http://www.importnew.com/7383.html" target="_blank" rel="noopener">http://www.importnew.com/7383.html</a></li>
-<li><a href="http://www.importnew.com/7541.html" target="_blank" rel="noopener">http://www.importnew.com/7541.html</a></li>
-<li><a href="http://www.importnew.com/7820.html" target="_blank" rel="noopener">http://www.importnew.com/7820.html</a></li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3011,7 +2966,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">328</span>
+                    <span class="site-state-item-count">329</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -3208,7 +3163,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">859k</span>
+    <span title="站点总字数">861k</span>
   
 
   
@@ -3217,7 +3172,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">13:01</span>
+    <span title="站点阅读时长">13:03</span>
   
 </div>
 

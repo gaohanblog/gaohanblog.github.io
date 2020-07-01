@@ -349,6 +349,220 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/25/leetCode-914-卡牌分组/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gh">
+      <meta itemprop="description" content="gratitude and love">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="To be or not to be?">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/01/25/leetCode-914-卡牌分组/" class="post-title-link" itemprop="url">leetCode-914-卡牌分组</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-01-25 09:11:26" itemprop="dateCreated datePublished" datetime="2020-01-25T09:11:26+08:00">2020-01-25</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构与算法/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构与算法/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">1.7k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">2 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><font color="#8B475D">题目描述</font></h2><p>给定一副牌，每张牌上都写着一个整数。</p>
+<p>此时，你需要选定一个数字 X，使我们可以将整副牌按下述规则分成 1 组或更多组：</p>
+<p>每组都有 X 张牌。<br>组内所有的牌上都写着相同的整数。<br>仅当你可选的 X &gt;= 2 时返回 true。</p>
+<blockquote>
+<p>示例 1：</p>
+<p>输入：[1,2,3,4,4,3,2,1]</p>
+<p>输出：true</p>
+<p>解释：可行的分组是 [1,1]，[2,2]，[3,3]，[4,4]</p>
+<p>示例 2：</p>
+<p>输入：[1,1,1,2,2,2,3,3]</p>
+<p>输出：false</p>
+<p>解释：没有满足要求的分组。</p>
+<p>示例 3：</p>
+<p>输入：[1]</p>
+<p>输出：false</p>
+<p>解释：没有满足要求的分组。</p>
+</blockquote>
+<p><strong>提示：</strong></p>
+<ul>
+<li>1 &lt;= deck.length &lt;= 10000</li>
+<li>0 &lt;= deck[i] &lt; 10000</li>
+</ul>
+<h2 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a><font color="#8B475D">解题思路</font></h2><p>题意要求将整副牌分组，组内每张牌的数值相同，各组牌的张数相同。那么我们先把数组中的每个数字的次数找出来，看看能不能都分成相同的组，而且分组时每组元素个数要大于二。</p>
+<p>那么查出数组中所有元素出现的次数，查出所有次数后看看能不能将所有元素的分为相等的份数。怎么去求这个相等份数那？</p>
+<p>假如数组中有1，2，3三个数字，出现次数分别为2，4，6。那么按照最少的1单独作为一个分组。2的次数是4可以分为两个分组，3出现的次数为6，可以分为3个分组。说白了就是将2，4，6做分组，我们需要对所有的数值的个数，求出所有公有的最小的值，即求公约数。假如数组元素出现的次数的公约数不为1，那么就相当于可以分为若干组。</p>
+<h2 id="代码提交"><a href="#代码提交" class="headerlink" title="代码提交"></a><font color="#8B475D">代码提交</font></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasGroupsSizeX</span><span class="params">(<span class="keyword">int</span>[] deck)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(deck.length &lt;= <span class="number">1</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Map&lt;Integer,Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="comment">//先把数字出现的次数存入map</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; deck.length; i++)&#123;</span><br><span class="line">            map.put(deck[i],map.getOrDefault(deck[i],<span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="comment">//计算每个数字出现的次数</span></span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;Integer, Integer&gt; entry : map.entrySet()) &#123;</span><br><span class="line">            list.add(entry.getValue());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//从头到尾找到每个数字次数的公约数</span></span><br><span class="line">        <span class="keyword">int</span> gcdValue = list.get(<span class="number">0</span>);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; list.size(); i++)&#123;</span><br><span class="line">            gcdValue = gcd(gcdValue,list.get(i));</span><br><span class="line">            <span class="comment">//如果任何两个数字公约数等于1，不满足公约数大于等于2的要求直接返回</span></span><br><span class="line">            <span class="keyword">if</span>(gcdValue == <span class="number">1</span>)&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>; </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">gcd</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(b == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> a;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> gcd(b,a % b);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/24/leetCode-690-员工的重要性/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -478,7 +692,7 @@
       
         
           
-            <h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><font color="#8B475D">题目描述</font></h2><h2 id="题目描述-1"><a href="#题目描述-1" class="headerlink" title="题目描述"></a><font color="#8B475D">题目描述</font></h2><p>给定一个保存员工信息的数据结构，它包含了员工唯一的id，重要度 和 直系下属的id。</p>
+            <h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><font color="#8B475D">题目描述</font></h2><p>给定一个保存员工信息的数据结构，它包含了员工唯一的id，重要度 和 直系下属的id。</p>
 <p>比如，员工1是员工2的领导，员工2是员工3的领导。他们相应的重要度为15, 10, 5。那么员工1的数据结构是[1, 15, [2]]，员工2的数据结构是[2, 10, [3]]，员工3的数据结构是[3, 5, []]。注意虽然员工3也是员工1的一个下属，但是由于并不是直系下属，因此没有体现在员工1的数据结构中。</p>
 <p>现在输入一个公司的所有员工信息，以及单个员工id，返回这个员工和他所有下属的重要度之和。</p>
 <blockquote>
@@ -2243,222 +2457,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/22/浩鲸科技校招笔试题-地铁打卡活动/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gh">
-      <meta itemprop="description" content="gratitude and love">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="To be or not to be?">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/01/22/浩鲸科技校招笔试题-地铁打卡活动/" class="post-title-link" itemprop="url">浩鲸科技校招笔试题-地铁打卡活动</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2020-01-22 17:36:26" itemprop="dateCreated datePublished" datetime="2020-01-22T17:36:26+08:00">2020-01-22</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构与算法/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a></span>
-
-                
-                
-                  ，
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构与算法/笔试题/" itemprop="url" rel="index"><span itemprop="name">笔试题</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          <br>
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">本文字数：</span>
-              
-              <span title="本文字数">2.9k</span>
-            </span>
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              
-              <span title="阅读时长">3 分钟</span>
-            </span>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><font color="#8B475D">题目描述</font></h2><p>地铁迷在某个城市组织了地铁打卡活动。活动要求前往该城市中的所有地铁站进行打卡。打卡可以在站外或者站内进行。地铁的计价规则如下：只要不出站，就不计费；出站时，只计算进站和出站站点的距离。如在同一个站点进出站，按照最低票价 a 元计算。假设地铁票不会超时。大部分站点都是通过地铁线连通的，而且地铁站的连通是双向的（若 A，B 连通，则 B，A连通），且具有传递性的（若 A，B 连通，且 B，C 连通，则 A，C连通）。但并不是所有的地铁站都相互连通，在不能通过坐地铁达到的两个地点间，交通的花费则提高到 b 元。地铁迷从酒店起点出发，再回到酒店。假设从酒店到达任意地铁站的交通花费为 b 元。请计算地铁迷完成打卡最小交通花费。</p>
-<p><strong>输入描述:</strong></p>
-<ul>
-<li><p>每组输入包括m + 1行。</p>
-</li>
-<li><p>第1行包含4个整数n，m，a，b，其中n表示地铁站点数，m表示连通的地铁站点对数，a代表地铁最低票价，b代表非地铁方式票价，其中0 &lt; a &lt; b。</p>
-</li>
-<li><p>第2到m + 1行，每行2个整数Hi，Ti代表站点Hi和Ti站点是连通的（0 &lt;= i&lt; m）。</p>
-</li>
-</ul>
-<p><strong>输出描述:</strong></p>
-<ul>
-<li>输出只有一行，包含一个整数，表示打卡的最小交通花费。</li>
-</ul>
-<blockquote>
-<p>示例1</p>
-<p>输入</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;8 7 3 6</span><br><span class="line">&gt;0 1</span><br><span class="line">&gt;1 2</span><br><span class="line">&gt;2 3</span><br><span class="line">&gt;0 3</span><br><span class="line">&gt;4 5</span><br><span class="line">&gt;5 6</span><br><span class="line">&gt;4 7</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<blockquote>
-<p>输出:24</p>
-</blockquote>
-<h2 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a><font color="#8B475D">解题思路</font></h2><p>一开始思路就是创建以一个二维连通图，去遍历这个图，找到连通区域有多少个，然后直接计算结果。</p>
-<p>但是上面那一种解法空间复杂度比较高，还有一种解法就用并查集的方式，并查集的特点是用下标来记录起点，用值来表示终点。可以大大降低空间的复杂度。</p>
-<h2 id="代码提交"><a href="#代码提交" class="headerlink" title="代码提交"></a><font color="#8B475D">代码提交</font></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        Scanner sc = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line">        <span class="keyword">int</span> n = sc.nextInt();</span><br><span class="line">        <span class="keyword">int</span> m = sc.nextInt();</span><br><span class="line">        <span class="keyword">int</span> a = sc.nextInt();</span><br><span class="line">        <span class="keyword">int</span> b = sc.nextInt();</span><br><span class="line">        <span class="keyword">int</span>[][] arr = <span class="keyword">new</span> <span class="keyword">int</span>[n][n];</span><br><span class="line">        <span class="keyword">boolean</span>[] visited = <span class="keyword">new</span> <span class="keyword">boolean</span>[n];</span><br><span class="line">        <span class="comment">//创建连通图</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; m;i++)&#123;</span><br><span class="line">            <span class="keyword">int</span> x = sc.nextInt();</span><br><span class="line">            <span class="keyword">int</span> y = sc.nextInt();</span><br><span class="line">            arr[x][y] = <span class="number">1</span>;</span><br><span class="line">            arr[y][x] = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        sc.close();</span><br><span class="line">        <span class="comment">//找到连通的区域</span></span><br><span class="line">        <span class="keyword">int</span> eare = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arr.length; i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(!visited[i])&#123;</span><br><span class="line">                dfs(arr,visited,i);</span><br><span class="line">                eare++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.print(eare * a + (eare + <span class="number">1</span>) * b);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//遍历连通图</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span>[][] arr,<span class="keyword">boolean</span> [] visited,<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">        visited[i] = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; arr[<span class="number">0</span>].length; j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(arr[i][j] == <span class="number">1</span> &amp;&amp; !visited[j])&#123;</span><br><span class="line">                dfs(arr,visited,j);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>并查集：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span>[] parent;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        Scanner sc = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line">        <span class="keyword">int</span> n = sc.nextInt();</span><br><span class="line">        <span class="keyword">int</span> m = sc.nextInt();</span><br><span class="line">        <span class="keyword">int</span> a = sc.nextInt();</span><br><span class="line">        <span class="keyword">int</span> b = sc.nextInt();</span><br><span class="line">        parent = <span class="keyword">new</span> <span class="keyword">int</span>[n];</span><br><span class="line">        <span class="comment">//初始化每个根节点的父节点指向自己</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++)&#123;</span><br><span class="line">            parent[i] = i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; m;i++)&#123;</span><br><span class="line">            <span class="keyword">int</span> x = sc.nextInt();</span><br><span class="line">            <span class="keyword">int</span> y = sc.nextInt();</span><br><span class="line">            <span class="comment">//合并两个节点</span></span><br><span class="line">            union(x,y);</span><br><span class="line">        &#125;</span><br><span class="line">        sc.close();</span><br><span class="line">        <span class="keyword">int</span> eare = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//查找根节点的数量就是连通区域的数量</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(parent[i] == i)&#123;</span><br><span class="line">                eare++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.print(eare * a + (eare + <span class="number">1</span>) * b);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//如果根节点不是自己，则找到根节点</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> x == parent[x] ? x : find(parent[x]);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//合并两个节点</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">union</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span>&#123;</span><br><span class="line">        parent[find(x)] = find(y);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2507,7 +2505,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">328</span>
+                    <span class="site-state-item-count">329</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2704,7 +2702,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">859k</span>
+    <span title="站点总字数">861k</span>
   
 
   
@@ -2713,7 +2711,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">13:01</span>
+    <span title="站点阅读时长">13:03</span>
   
 </div>
 

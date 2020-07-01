@@ -349,6 +349,208 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/04/leetCode-300-最长上升子序列/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gh">
+      <meta itemprop="description" content="gratitude and love">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="To be or not to be?">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/01/04/leetCode-300-最长上升子序列/" class="post-title-link" itemprop="url">leetCode-300-最长上升子序列</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-01-04 10:23:26" itemprop="dateCreated datePublished" datetime="2020-01-04T10:23:26+08:00">2020-01-04</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构与算法/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构与算法/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">1.2k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><font color="#8B475D">题目描述</font></h2><p>给定一个无序的整数数组，找到其中最长上升子序列的长度。</p>
+<blockquote>
+<p>示例:</p>
+<p>输入: [10,9,2,5,3,7,101,18]</p>
+<p>输出: 4 </p>
+<p>解释: 最长的上升子序列是 [2,3,7,101]，它的长度是 4。<br><strong>说明</strong>:</p>
+</blockquote>
+<p>可能会有多种最长上升子序列的组合，你只需要输出对应的长度即可。<br>你算法的时间复杂度应该为 O(n^2) 。</p>
+<h2 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a><font color="#8B475D">解题思路</font></h2><p>虽然暴力求解的方法不能通过，先看下暴力求解的过程，然后再去推导出动态规划的方程。</p>
+<p>从第一个元素a开始，把数组剩下的元素，挨个遍历，如果b比当前元素a大，再把遍历b和b后面的元素对比，直到把数组遍历完，返回出来以a开头最长上升子序列。然后再遍历a后面的数字。</p>
+<p>但是这样是指数级别的复杂度，仔细分析会发现里面有大量的重复运算，比如上面找到b元素后，我们在第一次遍历数组的时候还需要把b重新查一遍。</p>
+<p>顺着这个思路，可不可以把计算过的重复元素先保存起来。dp的思路就是<code>dp[i]</code>表示<code>nums[0]</code>到<code>nums[i]</code>，含<code>nums[i]</code>的最长上升子序列，每个<code>dp[i]</code>都表示到i元素的最大序列，所以每个元素代表的是当前最优，并不是全局最优。</p>
+<p>状态转移的方程是根据前面状态得到的，遍历到 <code>nums[i]</code> 时，考虑把索引i之前的所有的数都看一遍，只要当前的数<code>nums[i]</code>大于之前的某个数，那么 <code>nums[i]</code> 就可以接在这个数后面形成一个更长的上升子序列。因此，<code>dp[i]</code> 就等于索引 i 之前小于 <code>nums[i]</code> 的状态最大者 +1。</p>
+<h2 id="代码提交"><a href="#代码提交" class="headerlink" title="代码提交"></a><font color="#8B475D">代码提交</font></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lengthOfLIS</span><span class="params">(<span class="keyword">int</span>[] nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(nums.length == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> max = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span>[] dp = <span class="keyword">new</span> <span class="keyword">int</span>[nums.length];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length;i++)&#123;</span><br><span class="line">            dp[i] = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i&lt; nums.length;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = i - <span class="number">1</span>; j &gt;= <span class="number">0</span>; j--)&#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[i] &gt; nums[j])&#123;</span><br><span class="line">                    dp[i] = Math.max(dp[i],dp[j] + <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            max = Math.max(max,dp[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> max;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/31/leetCode-188-买卖股票的最佳时机IV/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2422,228 +2624,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/07/01-IOC的好处/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gh">
-      <meta itemprop="description" content="gratitude and love">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="To be or not to be?">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/12/07/01-IOC的好处/" class="post-title-link" itemprop="url">01-IOC的好处</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-12-07 11:54:11" itemprop="dateCreated datePublished" datetime="2019-12-07T11:54:11+08:00">2019-12-07</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          <br>
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">本文字数：</span>
-              
-              <span title="本文字数">2.8k</span>
-            </span>
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              
-              <span title="阅读时长">3 分钟</span>
-            </span>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>学习<code>spring</code>的原理，第一步就是要理解<code>IOC</code>的基本原理，而<code>IOC</code>的重要实现方式是<code>DI</code>，本文了解为什么要有<code>IOC</code>这种思想，它到底帮助我们解决了什么问题，它的优势又是什么。</p>
-<h2 id="依赖倒置原则"><a href="#依赖倒置原则" class="headerlink" title="依赖倒置原则"></a><font color="#8B475D">依赖倒置原则</font></h2><p>要了解控制反转( <code>Inversion of Control</code> ), 我觉得有必要先了解软件设计的一个重要思想：依赖倒置原则（<code>Dependency Inversion Principle</code> ）。</p>
-<p>什么是依赖倒置原则？假设我们设计一辆汽车：先设计轮子，然后根据轮子大小设计底盘，接着根据底盘设计车身，最后根据车身设计好整个汽车。这里就出现了一个“依赖”关系：汽车依赖车身，车身依赖底盘，底盘依赖轮子。</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-1.png" alt="image"></p>
-<p>这样的设计看起来没问题，但是可维护性却很低。假设设计完工之后，上司却突然说根据市场需求的变动，要我们把车子的轮子设计都改大一码。这下我们就蛋疼了：因为我们是根据轮子的尺寸设计的底盘，轮子的尺寸一改，底盘的设计就得修改；同样因为我们是根据底盘设计的车身，那么车身也得改，同理汽车设计也得改——整个设计几乎都得改！</p>
-<p>注意，我们这里的轮胎是底层，汽车是高层，在整体高层架构确定的情况下，底层根据客户的需求进行改动是很正常的，但是这种模式改动的话，牵一发而动全身，不仅浪费极大时间，在成千上万的类的情况下，也无法进行逐一改动了。</p>
-<p>我们现在换一种思路。我们先设计汽车的大概样子，然后根据汽车的样子来设计车身，根据车身来设计底盘，最后根据底盘来设计轮子。这时候，依赖关系就倒置过来了：<strong>轮子依赖底盘， 底盘依赖车身， 车身依赖汽车。</strong></p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-2.png" alt="image"></p>
-<p>这时候，上司再说要改动轮子的设计，我们就只需要改动轮子的设计，而不需要动底盘，车身，汽车的设计了。</p>
-<p>这就是依赖倒置原则——把原本的高层建筑依赖底层建筑“倒置”过来，变成底层建筑依赖高层建筑。高层建筑决定需要什么，底层去实现这样的需求，但是高层并不用管底层是怎么实现的。这样就不会出现前面的“牵一发动全身”的情况。</p>
-<p>从软件设计的角度来看，改变轮胎这种类的实现是比较简单的，但是有的人会问：如果我要改汽车样式咋办呢？这不跟上面一样了。注意，汽车是高层建筑，这个东西相当于初期的软件架构，如果到后期要改动这个，将相当于处于架构设计不合理，那么整个项目会出现推倒重来的现象，这不是<code>spring</code>所能解决的事情了。</p>
-<p>控制反转（<code>Inversion of Control</code>） 就是依赖倒置原则的一种代码设计的思路。具体采用的方法就是所谓的依赖注入（<code>Dependency Injection</code>）。其实这些概念初次接触都会感到云里雾里的。说穿了，这几种概念的关系大概如下：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-3.png" alt="image"></p>
-<p>为了理解这几个概念，我们还是用上面汽车的例子。只不过这次换成代码。我们先定义四个<code>Class</code>，车，车身，底盘，轮胎。然后初始化这辆车，最后跑这辆车。代码结构如下：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-4.png" alt="image"></p>
-<p>这样，就相当于上面第一个例子，上层建筑依赖下层建筑——每一个类的构造函数都直接调用了底层代码的构造函数。假设我们需要改动一下轮胎（<code>Tire</code>）类，把它的尺寸变成动态的，而不是一直都是30。我们需要这样改：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-5.png" alt="image"></p>
-<p>由于我们修改了轮胎的定义，为了让整个程序正常运行，我们需要做以下改动：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-6.png" alt="image"></p>
-<p>由此我们可以看到，仅仅是为了修改轮胎的构造函数，这种设计却需要修改整个上层所有类的构造函数！在软件工程中，这样的设计几乎是不可维护的——在实际工程项目中，有的类可能会是几千个类的底层，如果每次修改这个类，我们都要修改所有以它作为依赖的类，那软件的维护成本就太高了。</p>
-<p>所以我们需要进行控制反转（<code>IoC</code>），及上层控制下层，而不是下层控制着上层。我们用依赖注入（<code>Dependency Injection</code>）这种方式来实现控制反转。所谓依赖注入，就是把底层类作为参数传入上层类，实现上层类对下层类的“控制”。这里我们用构造方法传递的依赖注入方式重新写车类的定义：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-7.png" alt="image"></p>
-<p>这里我们再把轮胎尺寸变成动态的，同样为了让整个系统顺利运行，我们需要做如下修改：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-8.png" alt="image"></p>
-<p>看到没？这里我只需要修改轮胎类就行了，不用修改其他任何上层类。这显然是更容易维护的代码。不仅如此，在实际的工程中，这种设计模式还有利于不同组的协同合作和单元测试：比如开发这四个类的分别是四个不同的组，那么只要定义好了接口，四个不同的组可以同时进行开发而不相互受限制；而对于单元测试，如果我们要写<code>Car</code>类的单元测试，就只需要<code>Mock</code>一下<code>Framework</code>类传入<code>Car</code>就行了，而不用把<code>Framework</code>,<code>Bottom</code> ,<code>Tire</code> 全部 <code>new</code>一遍再来构造 <code>Car</code>。</p>
-<p>这里我们是采用的构造函数传入的方式进行的依赖注入。其实还有另外两种方法：<code>Setter</code>传递和接口传递。这里就不多讲了，核心思路都是一样的，都是为了实现控制反转。</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-9.png" alt="image"></p>
-<p>看到这里你应该能理解什么控制反转和依赖注入了。那什么是控制反转容器(<code>IoC Container</code>)呢？其实上面的例子中，对车类进行初始化的那段代码发生的地方，就是控制反转容器。</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-10.png" alt="image"></p>
-<p>显然你也应该观察到了，因为采用了依赖注入，在初始化的过程中就不可避免的会写大量的<code>new</code>。这里<code>IoC</code>容器就解决了这个问题。这个容器可以自动对你的代码进行初始化，你只需要维护一个<code>Configuration</code>（可以是<code>xml</code>可以是一段代码），而不用每次初始化一辆车都要亲手去写那一大段初始化的代码。这是引入<code>IoC Container</code>的第一个好处。</p>
-<p><code>IoC Container</code>的第二个好处是：我们在创建实例的时候不需要了解其中的细节。在上面的例子中，我们自己手动创建一个车<code>instance</code>时候，是从底层往上层<code>new</code>的：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-11.png" alt="image"></p>
-<p>这个过程中，我们需要了解整个<code>Car/Framework/Bottom/Tire</code>类构造函数是怎么定义的，才能一步一步<code>new</code>注入。而<code>IoC Container</code>在进行这个工作的时候是反过来的，它先从最上层开始往下找依赖关系，到达最底层之后再往上一步一步<code>new</code>（有点像深度优先遍历）：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-12.png" alt="image"></p>
-<p>这里<code>IoC Container</code>可以直接隐藏具体的创建实例的细节，在我们来看它就像一个工厂：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/spring/spring1-13.png" alt="image"></p>
-<p>我们就像是工厂的客户。我们只需要向工厂请求一个<code>Car</code>实例，然后它就给我们按照<code>Config</code>创建了一个<code>Car</code>实例。我们完全不用管这个<code>Car</code>实例是怎么一步一步被创建出来。</p>
-<p>实际项目中，有的Service Class可能是十年前写的，有几百个类作为它的底层。假设我们新写的一个API需要实例化这个Service，我们总不可能回头去搞清楚这几百个类的构造函数吧？IoC Container的这个特性就很完美的解决了这类问题——因为这个架构要求你在写class的时候需要写相应的Config文件，所以你要初始化很久以前的Service类的时候，前人都已经写好了Config文件，你直接在需要用的地方注入这个Service就可以了。这大大增加了项目的可维护性且降低了开发难度。</p>
-<p>转自：</p>
-<ul>
-<li><a href="https://www.zhihu.com/question/23277575/answer/169698662" target="_blank" rel="noopener">知乎Sevenvidia的回答</a></li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2692,7 +2672,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">328</span>
+                    <span class="site-state-item-count">329</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2889,7 +2869,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">859k</span>
+    <span title="站点总字数">861k</span>
   
 
   
@@ -2898,7 +2878,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">13:01</span>
+    <span title="站点阅读时长">13:03</span>
   
 </div>
 

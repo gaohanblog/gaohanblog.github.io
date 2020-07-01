@@ -349,6 +349,202 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/06/11-CountDownLatch和CyclicBarrier/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gh">
+      <meta itemprop="description" content="gratitude and love">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="To be or not to be?">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/11/06/11-CountDownLatch和CyclicBarrier/" class="post-title-link" itemprop="url">11-CountDownLatch和CyclicBarrier</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-06 08:23:48" itemprop="dateCreated datePublished" datetime="2019-11-06T08:23:48+08:00">2019-11-06</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/多线程/" itemprop="url" rel="index"><span itemprop="name">多线程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">3.3k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">3 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>CountDownLatch和CyclicBarrier是java.util.concurrent提供的两个工具类。接下来我们将解释下具体这两个类如何使用：</p>
+<h2 id="CountDownLatch"><a href="#CountDownLatch" class="headerlink" title="CountDownLatch"></a><font color="#8B475D">CountDownLatch</font></h2><p>countDownLatch是一个同步工具类，主要作用就是协调线程直接的同步；我们可以把它理解为一个“减法计数器”；是一次性使用的；<br>countDownLatch定义一个数值；比如现在有n个线程，每一个线程任务执行完成后，就将计数器减一（n-1）；直到计数器为0的时候，才执行主线程。像“英雄联盟”、“王者荣耀”等游戏。<br>拿一个说烂的例子：100米赛跑比赛；有4个人参加；要等4个人都准备好了（子线程）。然后裁判（主线程）才发号施令说：预备，开始跑！<br>我们用demo来实现它</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CountDownLatchTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        CountDownLatch  latch = <span class="keyword">new</span> CountDownLatch(<span class="number">4</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;latch.getCount();i++)&#123;</span><br><span class="line">            <span class="keyword">new</span> Thread(<span class="keyword">new</span> RunThread(latch),<span class="string">"运动员"</span>+i).start();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"正在等待所有玩家准备好"</span>);</span><br><span class="line">        <span class="comment">// 等待子线程的执行，当count为0的时候，主线程恢复任务</span></span><br><span class="line">        latch.await();</span><br><span class="line">        System.out.println(<span class="string">"预备，开始跑！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span>  <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">RunThread</span> <span class="keyword">implements</span>  <span class="title">Runnable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span>  CountDownLatch latch;</span><br><span class="line">        <span class="function"><span class="keyword">public</span>  <span class="title">RunThread</span><span class="params">(CountDownLatch latch)</span></span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.latch = latch;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Random rand = <span class="keyword">new</span> Random();</span><br><span class="line">                <span class="keyword">int</span> randomNum = rand.nextInt(<span class="number">2001</span>) + <span class="number">1000</span>;</span><br><span class="line">                Thread.sleep(randomNum);</span><br><span class="line">                System.out.println(Thread.currentThread().getName()+<span class="string">" 已经准备好了, 所使用的时间为 "</span>+((<span class="keyword">double</span>)randomNum/<span class="number">1000</span>)+<span class="string">"s"</span>);</span><br><span class="line"></span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="comment">//闭锁对象，计数减一：</span></span><br><span class="line">                latch.countDown();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://blog-picture-g.test.upcdn.net/thread/thread50-1.png" alt="image"></p>
+<h2 id="CyclicBarrier"><a href="#CyclicBarrier" class="headerlink" title="CyclicBarrier"></a><font color="#8B475D">CyclicBarrier</font></h2><p>CyclicBarrier同步机制作用在本身运行中的线程；而CountDownLatch机制作用在于主线程；CyclicBarrier类似于栅栏的意思，它能够阻塞一组线程或者多个线程直到某个事情发生；这里大家联想一下一个场景：公司开展了一个员工活动，活动是分段接力，有4个员工参加，当员工都到达第一阶段的时候，才能继续往下一个阶段奔跑（这里往下一阶段奔跑这个事件，是由最后一个到达的员工发起的）；<br>我们把上面CountDownLatch的运动员示例改一改，我们改成这样：有4名运动员，参加3段奔跑计时比赛，当4名成员都到达每一个阶段的时候，都相互等待，直到最后一名到达后，才能进行下一阶段的奔跑。<br>我们用demo来实现它：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CyclicBarrierTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        CyclicBarrier barrier = <span class="keyword">new</span> CyclicBarrier(<span class="number">4</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;barrier.getParties();i++)&#123;</span><br><span class="line">            <span class="keyword">new</span> Thread(<span class="keyword">new</span> CyclicBarrierTest.RunThread(barrier),<span class="string">"运动员"</span>+i).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span>  <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">RunThread</span> <span class="keyword">implements</span>  <span class="title">Runnable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span>  CyclicBarrier barrier;</span><br><span class="line">        <span class="function"><span class="keyword">public</span>  <span class="title">RunThread</span><span class="params">(CyclicBarrier barrier)</span></span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.barrier = barrier;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">3</span>;i++) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Random rand = <span class="keyword">new</span> Random();</span><br><span class="line">                    <span class="keyword">int</span> randomNum = rand.nextInt(<span class="number">1000</span>);</span><br><span class="line">                    Thread.sleep(randomNum);</span><br><span class="line">                    <span class="keyword">if</span>(i==<span class="number">2</span>)&#123;</span><br><span class="line">                        System.out.println(Thread.currentThread().getName() + <span class="string">" 已到达第"</span>+(i+<span class="number">1</span>)+<span class="string">"阶段，赛跑结束！"</span> + ((<span class="keyword">double</span>) randomNum / <span class="number">1000</span>) + <span class="string">"s"</span>);</span><br><span class="line">                    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                        System.out.println(Thread.currentThread().getName() + <span class="string">" 已到达第"</span>+(i+<span class="number">1</span>)+<span class="string">"阶段，等待其他人到达"</span> + ((<span class="keyword">double</span>) randomNum / <span class="number">1000</span>) + <span class="string">"s"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                    barrier.await();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (BrokenBarrierException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://blog-picture-g.test.upcdn.net/thread/thread50-2.png" alt="image"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/29/10-线程池原理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2932,250 +3128,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/14/01-线程基本知识/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gh">
-      <meta itemprop="description" content="gratitude and love">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="To be or not to be?">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/10/14/01-线程基本知识/" class="post-title-link" itemprop="url">01-线程基本知识</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-14 22:07:48" itemprop="dateCreated datePublished" datetime="2019-10-14T22:07:48+08:00">2019-10-14</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-                  ，
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/多线程/" itemprop="url" rel="index"><span itemprop="name">多线程</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          <br>
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">本文字数：</span>
-              
-              <span title="本文字数">3.7k</span>
-            </span>
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              
-              <span title="阅读时长">3 分钟</span>
-            </span>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="start-和run-方法的区别"><a href="#start-和run-方法的区别" class="headerlink" title="start()和run()方法的区别"></a><font color="#8B475D">start()和run()方法的区别</font></h2><p>我们先看一个小栗子：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/thread/thread1-1.png" alt="image"></p>
-<p>从主函数中创建一个线程，并且以<code>t.run()</code>的方式调用，从输出结果可以看出，java是默认开启主线程来执行的。所以我们用t.run()去执行的时候，只是相当于简单的函数调用，因为从打印结果可以看出都是main进程，那么，实质上并没有新建一个子线程。</p>
-<p>假如用<code>t.start()</code>来调用那：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/thread/thread1-2.png" alt="image"></p>
-<p>那么，从表象上我们已经知道，<code>run</code>只是简单的函数调用，<code>start</code>才会真正地开启一个新线程来执行，下面来看看<code>start()</code>的基本实现方式。</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/thread/thread1-3.png" alt="image"></p>
-<p>可以看到<code>start</code>方法里面调用了<code>start0</code>方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">start0</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
-
-<p>而<code>start0</code>方法是一个<code>native</code>方法,IDEA已经看不了了，我们去<code>openJDK</code>看看:</p>
-<p>找到 <a href="http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/file/f0b93fbd8cf8/src/share/native/java/lang/Thread.c" target="_blank" rel="noopener">Thread.c</a>的源码：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/thread/thread1-4.png" alt="image"></p>
-<p>找到了<code>JVM_StartThread</code>方法，但是他放在一个数组里面，没有找到他的实现，所以应该在引入的<code>jvm.h</code>库里面，找打 <a href="http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/76a9c9cf14f1/src/share/vm/prims/jvm.cpp" target="_blank" rel="noopener">jvm.cpp</a>:</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/thread/thread1-5.jpg" alt="image"></p>
-<p>😤😤😤😤enmmm，虽然看不大懂但是我们确实看到start()方法会调用虚拟机去创建一个新线程，然年再去调用<code>run()</code>方法去执行。所以流程图如下：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/thread/thread1-6.png" alt="image"></p>
-<p>最终总结：</p>
-<ul>
-<li>调用<code>start()</code>方法会创建一个新的子线程并启动</li>
-<li><code>run()</code>方法只是<code>thread</code>的一个普通方法的调用</li>
-</ul>
-<p>以上分析参考自： <a href="https://blog.csdn.net/qq_18657175/article/details/89735886" target="_blank" rel="noopener">源码层面解析Thread中run()和start()的区别？</a></p>
-<h2 id="Thread和Runnable是什么关系"><a href="#Thread和Runnable是什么关系" class="headerlink" title="Thread和Runnable是什么关系"></a><font color="#8B475D">Thread和Runnable是什么关系</font></h2><p>我们先看看<code>Thread</code>这个类：</p>
-<p><img src="http://blog-picture-g.test.upcdn.net/thread/thread1-7.png" alt="image"></p>
-<p>我们可以看到，<code>Thread</code>是一个<code>class</code>，而<code>Runnable</code>是一个<code>interface</code>，而<code>Runnable</code>中只有一个抽象方法就是<code>run()</code>。</p>
-<p>那么，我们上面说到，新建一个线程是要靠<code>start()</code>来实现的，那么<code>Runnable</code>是如何来新建一个线程呢？它不是只有一个<code>run()</code>方法吗？</p>
-<p>此时再来看<code>Thread</code>类，它里面有大量的方法，就包含了<code>run()</code>和<code>start()</code>方法，它还有一个重要的构造函数为:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Thread</span><span class="params">(Runnable target)</span> </span>&#123;...&#125;</span><br></pre></td></tr></table></figure>
-
-<p>就是说，传入<code>Runable</code>接口的实例。在调用<code>Thread</code>的<code>start()</code>方法创建子线程,再来调用重写<code>run()</code>方法就可以了，下面我们看个栗子。</p>
-<p>先说说用<code>Thread</code>的方式来创建一个子线程类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyThread</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++)&#123;</span><br><span class="line">            System.out.println(<span class="string">"current Thread "</span> + name + <span class="string">" is running "</span>+i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>测试：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MyThread t1 = <span class="keyword">new</span> MyThread(<span class="string">"thread01"</span>);</span><br><span class="line">        MyThread t2 = <span class="keyword">new</span> MyThread(<span class="string">"thread02"</span>);</span><br><span class="line">        MyThread t3 = <span class="keyword">new</span> MyThread(<span class="string">"thread03"</span>);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t3.start();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>结果：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">current Thread thread02 is running <span class="number">0</span></span><br><span class="line">current Thread thread02 is running <span class="number">1</span></span><br><span class="line">current Thread thread01 is running <span class="number">0</span></span><br><span class="line">current Thread thread02 is running <span class="number">2</span></span><br><span class="line">current Thread thread02 is running <span class="number">3</span></span><br><span class="line">current Thread thread02 is running <span class="number">4</span></span><br><span class="line">current Thread thread03 is running <span class="number">0</span></span><br><span class="line">current Thread thread01 is running <span class="number">1</span></span><br><span class="line">current Thread thread03 is running <span class="number">1</span></span><br><span class="line">current Thread thread01 is running <span class="number">2</span></span><br><span class="line">current Thread thread03 is running <span class="number">2</span></span><br><span class="line">current Thread thread01 is running <span class="number">3</span></span><br><span class="line">current Thread thread03 is running <span class="number">3</span></span><br><span class="line">current Thread thread01 is running <span class="number">4</span></span><br><span class="line">current Thread thread03 is running <span class="number">4</span></span><br></pre></td></tr></table></figure>
-
-<p>可以看出每个线程是交替进行的，但是他们属于同一个进程，共享同一个地址和资源，所以不需要切换，极大的提高了CPU的执行效率。</p>
-<p>下面再来看看<code>Runnable</code>接口是怎么实现多线程的：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRunable</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyRunable</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++)&#123;</span><br><span class="line">            System.out.println(<span class="string">"current Thread "</span> + name + <span class="string">" is running "</span>+i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>测试：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MyRunable r1 = <span class="keyword">new</span> MyRunable(<span class="string">"runable1"</span>);</span><br><span class="line">        MyRunable r2 = <span class="keyword">new</span> MyRunable(<span class="string">"runable2"</span>);</span><br><span class="line">        MyRunable r3 = <span class="keyword">new</span> MyRunable(<span class="string">"runable3"</span>);</span><br><span class="line"></span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(r1);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(r2);</span><br><span class="line">        Thread t3 = <span class="keyword">new</span> Thread(r3);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t3.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>执行结果：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">current Thread runable1 is running <span class="number">0</span></span><br><span class="line">current Thread runable2 is running <span class="number">0</span></span><br><span class="line">current Thread runable2 is running <span class="number">1</span></span><br><span class="line">current Thread runable2 is running <span class="number">2</span></span><br><span class="line">current Thread runable2 is running <span class="number">3</span></span><br><span class="line">current Thread runable2 is running <span class="number">4</span></span><br><span class="line">current Thread runable3 is running <span class="number">0</span></span><br><span class="line">current Thread runable3 is running <span class="number">1</span></span><br><span class="line">current Thread runable3 is running <span class="number">2</span></span><br><span class="line">current Thread runable3 is running <span class="number">3</span></span><br><span class="line">current Thread runable3 is running <span class="number">4</span></span><br><span class="line">current Thread runable1 is running <span class="number">1</span></span><br><span class="line">current Thread runable1 is running <span class="number">2</span></span><br><span class="line">current Thread runable1 is running <span class="number">3</span></span><br><span class="line">current Thread runable1 is running <span class="number">4</span></span><br></pre></td></tr></table></figure>
-
-<p>总结一下他们特点：</p>
-<ul>
-<li>调用<code>start()</code>方法会创建一个新的子线程并启动，<code>run()</code>方法是当前线程一个普通方法的调用。</li>
-<li><code>Thread</code>是一个类，<code>Runnable</code>是一个接口，前者实现后者</li>
-<li><code>Thread</code>有<code>start</code>方法，结合<code>run()</code>可以实现多线程，但是<code>Runnable</code>没有<code>start()</code>方法，所以要通过<code>Thread()</code>来实现，所以，两种方式最终都是通过<code>Thread</code>的<code>start()</code>来实现<code>run()</code>的多线程特性</li>
-<li>由于<code>JAVA</code>是单一继承的，所以推荐多使用<code>Runnable</code>接口</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3224,7 +3176,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">328</span>
+                    <span class="site-state-item-count">329</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -3421,7 +3373,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">859k</span>
+    <span title="站点总字数">861k</span>
   
 
   
@@ -3430,7 +3382,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">13:01</span>
+    <span title="站点阅读时长">13:03</span>
   
 </div>
 

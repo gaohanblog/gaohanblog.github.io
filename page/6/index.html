@@ -349,6 +349,251 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/leetCode-56-合并区间/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gh">
+      <meta itemprop="description" content="gratitude and love">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="To be or not to be?">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/04/23/leetCode-56-合并区间/" class="post-title-link" itemprop="url">leetCode-56-合并区间</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-04-23 14:14:26 / 修改时间：14:19:26" itemprop="dateCreated datePublished" datetime="2020-04-23T14:14:26+08:00">2020-04-23</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构与算法/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构与算法/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">2.3k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">2 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><font color="#8B475D">题目描述</font></h2><p>给出一个区间的集合，请合并所有重叠的区间。</p>
+<blockquote>
+<p>示例 1: </p>
+<p>输入: [[1,3],[2,6],[8,10],[15,18]]</p>
+<p>输出: [[1,6],[8,10],[15,18]]</p>
+<p>解释: 区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].</p>
+<p>示例 2: </p>
+<p>输入: [[1,4],[4,5]]</p>
+<p>输出: [[1,5]]</p>
+<p>解释: 区间 [1,4] 和 [4,5] 可被视为重叠区间。</p>
+</blockquote>
+<h2 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a><font color="#8B475D">解题思路</font></h2><p>怎么找到重叠区间，假如两个区间有重叠部分，比如[a,b]和[c,d]两个区间。无外乎两种情况</p>
+<ul>
+<li>a&gt;=c并且a&lt;=d，这样说明一个集合是另一个集合的子区间。</li>
+<li>c &lt;= b这样说明了[c,d]和[a,b]有交集。<br>两种情况的特点是，两个区间起点和终点(a,b,c,d)必定不是递增的序列。所以在合并的时候，需要找到不是递增序列的所有序列，然后找到所有序列中左侧最小的一个元素，和右侧最大的元素。</li>
+</ul>
+<p>为了能顺利找到所有不是递增的序列，将所有序列的起点排序，这样<br>保证了，最小起点在最左侧，然后在从头遍历数组挨个比较结束区间是不是大于等于下一个区间的起点，如果大于说明存在两个区间存在重叠部分，将两个区间合并。</p>
+<h2 id="代码提交"><a href="#代码提交" class="headerlink" title="代码提交"></a><font color="#8B475D">代码提交</font></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[][] merge(<span class="keyword">int</span>[][] intervals) &#123;</span><br><span class="line">        <span class="keyword">if</span>(intervals.length == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        quickSort(<span class="number">0</span>,intervals.length-<span class="number">1</span>,intervals);</span><br><span class="line">        List&lt;<span class="keyword">int</span>[]&gt; res = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="keyword">int</span>[] cur = intervals[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; intervals.length; i++)&#123;</span><br><span class="line">            <span class="comment">//如果新的区间开始位置，小于等于前面的结束位置，说明存在共同区间</span></span><br><span class="line">            <span class="keyword">if</span>(intervals[i][<span class="number">0</span>] &lt;= cur[<span class="number">1</span>])&#123;</span><br><span class="line">                cur[<span class="number">1</span>] = cur[<span class="number">1</span>] &gt;= intervals[i][<span class="number">1</span>] ? cur[<span class="number">1</span>] : intervals[i][<span class="number">1</span>];</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                res.add(cur);</span><br><span class="line">                cur = intervals[i];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        res.add(cur);</span><br><span class="line">        <span class="keyword">return</span> res.toArray(<span class="keyword">new</span> <span class="keyword">int</span>[res.size()][]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//快排</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">quickSort</span><span class="params">(<span class="keyword">int</span> left, <span class="keyword">int</span> right,<span class="keyword">int</span>[][] intervals)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(left &gt;= right)&#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> start = left;</span><br><span class="line">        <span class="keyword">int</span> end = right;</span><br><span class="line">        <span class="keyword">int</span> pivot = intervals[left][<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">while</span>(left &lt; right)&#123;</span><br><span class="line">            <span class="comment">//右指针左挪</span></span><br><span class="line">            <span class="keyword">if</span>(intervals[right][<span class="number">0</span>] &gt; pivot)&#123;</span><br><span class="line">                right--;</span><br><span class="line">            &#125;<span class="keyword">else</span> <span class="keyword">if</span>(intervals[left][<span class="number">0</span>] &lt;= pivot)&#123;<span class="comment">//左指针右挪</span></span><br><span class="line">                left++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//符合左大于基准值和右小于基准值，交换</span></span><br><span class="line">            <span class="keyword">if</span>(intervals[left][<span class="number">0</span>] &gt; pivot &amp;&amp; intervals[right][<span class="number">0</span>] &lt;= pivot)&#123;</span><br><span class="line">                swap(left,right,intervals);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        swap(start,left,intervals);</span><br><span class="line">        <span class="comment">//递归左右两部分</span></span><br><span class="line">        quickSort(start,left-<span class="number">1</span>,intervals);</span><br><span class="line">        quickSort(left+<span class="number">1</span>,end,intervals);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> left, <span class="keyword">int</span> right, <span class="keyword">int</span>[][] intervals)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[] temp = intervals[left];</span><br><span class="line">        intervals[left] = intervals[right];</span><br><span class="line">        intervals[right] = temp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/22/leetCode-3-无重复字符的最长子串/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2509,231 +2754,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/13/leetCode-1049-最后一块石头的重量II/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gh">
-      <meta itemprop="description" content="gratitude and love">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="To be or not to be?">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/04/13/leetCode-1049-最后一块石头的重量II/" class="post-title-link" itemprop="url">leetCode-1049-最后一块石头的重量II</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2020-04-13 13:22:26" itemprop="dateCreated datePublished" datetime="2020-04-13T13:22:26+08:00">2020-04-13</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构与算法/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a></span>
-
-                
-                
-                  ，
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构与算法/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          <br>
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">本文字数：</span>
-              
-              <span title="本文字数">2.6k</span>
-            </span>
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              
-              <span title="阅读时长">2 分钟</span>
-            </span>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><font color="#8B475D">题目描述</font></h2><p>有一堆石头，每块石头的重量都是正整数。</p>
-<p>每一回合，从中选出<strong>任意两块石头</strong>，然后将它们一起粉碎。假设石头的重量分别为x 和y，且x &lt;= y。那么粉碎的可能结果如下：</p>
-<p>如果x == y，那么两块石头都会被完全粉碎；<br>如果x != y，那么重量为x的石头将会完全粉碎，而重量为y的石头新重量为y-x。<br>最后，最多只会剩下一块石头。返回此石头最小的可能重量。如果没有石头剩下，就返回 0。</p>
-<blockquote>
-<p>示例：</p>
-<p>输入：[2,7,4,1,8,1]</p>
-<p>输出：1</p>
-<p>解释：</p>
-<p>组合 2 和 4，得到 2，所以数组转化为 [2,7,1,8,1]，</p>
-<p>组合 7 和 8，得到 1，所以数组转化为 [2,1,1,1]，</p>
-<p>组合 2 和 1，得到 1，所以数组转化为 [1,1,1]，</p>
-<p>组合 1 和 1，得到 0，所以数组转化为 [1]，这就是最优值。</p>
-</blockquote>
-<p><strong>提示：</strong></p>
-<ul>
-<li>1 &lt;= stones.length &lt;= 30</li>
-<li>1 &lt;= stones[i] &lt;= 1000</li>
-</ul>
-<h2 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a><font color="#8B475D">解题思路</font></h2><p>一开始，感觉和第1046题一样。后面用1046题的答案试了一下，发现<code>[33,31,25,24,40]</code>测试通不过。按照贪心的思路，答案是9，但是要求是5。后面发现得出5的答案过程是</p>
-<ul>
-<li>40 - 26 = 14</li>
-<li>33 - 21 = 12</li>
-<li>31 - 14 = 17</li>
-<li>17 - 12 = 5</li>
-</ul>
-<p>仔细读题发现46是选出两块<strong>最重的</strong>石头，所以可以用贪心，这个是从中选出<strong>任意两块石头</strong>。下面整理下从深度优先到动态规划思路：</p>
-<ul>
-<li>既然不是每次都选中最重的思路，那就穷举，先拿i块石头，那后挨个试一下拿第i+1石头的结果，类似于深度优先的暴力枚举所有的可能，所以假如不做其他处理，算法复杂度是O(n!),虽然<code>stones.length &lt;= 30</code>但也是天文数字。那么暴力求解的记忆化处理就是动态规划的思路。<ul>
-<li>这个问题可以转化为01背包问题，先看下背包问题中背包问题要有两个数组，一个是重量的，一个是价值的。但是这个问题里面只有一个数组，它是重量呢？还是价值呢？如果是其中一个，另一个又在哪？那么这么想这个数组即是重量又是价值。就是说如果你重量为1，那么你的价值也为1。想通了这个问题，那背包中容量那？</li>
-<li>比如例子中给的数据<code>[2,7,4,1,8,1]</code>,得到最小值的算式是<code>1+1-(4-2)+(8-7)</code>,可以转化为<code>1+1+2+8-7-2</code>，换一种想法就是将这些数字分成两拨，使得他们的<strong>和的差最小</strong>，在进一步，可以变成 选出一些数字，使得它们最逼近整个数组和除以二的值，而最后的结果，就是abs（这个数-总和除以二）*2。</li>
-</ul>
-</li>
-</ul>
-<h2 id="代码提交"><a href="#代码提交" class="headerlink" title="代码提交"></a><font color="#8B475D">代码提交</font></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lastStoneWeightII</span><span class="params">(<span class="keyword">int</span>[] stones)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> stone : stones)&#123;</span><br><span class="line">            sum += stone;</span><br><span class="line">        &#125;     </span><br><span class="line">        <span class="keyword">int</span> capacity = sum / <span class="number">2</span> + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span>[][] dp = <span class="keyword">new</span> <span class="keyword">int</span>[stones.length][capacity];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; capacity;i++)&#123;</span><br><span class="line">            dp[<span class="number">0</span>][i] = i &gt;= stones[<span class="number">0</span>] ? stones[<span class="number">0</span>] : <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; stones.length;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; capacity;j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(stones[i] &gt; j)&#123;</span><br><span class="line">                    dp[i][j] = dp[i - <span class="number">1</span>][j];</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    dp[i][j] = Math.max(dp[i - <span class="number">1</span>][j - stones[i]] + stones[i],dp[i-<span class="number">1</span>][j]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sum - <span class="number">2</span> * dp[stones.length- <span class="number">1</span>][capacity - <span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>优化dp空间：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//因为dp的状态之和前面i个元素有关，所以可以用循环的方式更新原来dp中第一维的状态</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">solution</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lastStoneWeightII</span><span class="params">(<span class="keyword">int</span>[] stones)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> stone : stones)&#123;</span><br><span class="line">            sum += stones;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">int</span> capacity = sum / <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">int</span>[] dp = <span class="keyword">new</span> <span class="keyword">int</span>[capacity + <span class="number">1</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//初始化第一行</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;= capacity; i++)&#123;</span><br><span class="line">            dp[i] = i &gt;= stones[<span class="number">0</span>] ? stones[<span class="number">0</span>] : <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>;i &lt; stones.length;i++)&#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = capacity; j &gt;= stones[i]; j--) &#123;</span><br><span class="line">                dp[j] = Math.max(dp[j], dp[j - stones[i]] + stones[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sum - <span class="number">2</span> * dp[capacity];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2782,7 +2802,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">328</span>
+                    <span class="site-state-item-count">329</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2979,7 +2999,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">859k</span>
+    <span title="站点总字数">861k</span>
   
 
   
@@ -2988,7 +3008,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">13:01</span>
+    <span title="站点阅读时长">13:03</span>
   
 </div>
 
